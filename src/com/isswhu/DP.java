@@ -1,5 +1,7 @@
 package com.isswhu;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -114,6 +116,68 @@ public class DP {
         dp[i][j] = Math.min(dp(i+1, j, triangle, dp, last), dp(i+1, j+1, triangle, dp, last));
         dp[i][j] += triangle.get(i-1).get(j-1);
         return dp[i][j];
+    }
+
+    // 139 word break
+    public boolean wordBreak(String s, List<String> wordDict) {
+        boolean[] dp = new boolean[s.length()];
+        HashSet<String> hs = new HashSet<>(wordDict);
+        int maxlen = 0;
+        for (String str : wordDict) {
+            if (str.length() > maxlen)
+                maxlen = str.length();
+        }
+        String s1 = s.substring(0,1);
+        dp[0] = hs.contains(s1);
+        for (int i = 1; i < s.length(); i++) {
+            for (int j = 0; j < maxlen; j++) {
+                if (i - j < 0)
+                    break;
+                if (hs.contains(s.substring(i-j, i+1))) {
+                    if (i - j == 0) {
+                        dp[i] = true;
+                        break;
+                    } else if (dp[i-j-1]){
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return dp[s.length()-1];
+    }
+
+    // 152 maximum product subarray
+    public int maxProduct(int[] nums) {
+        int[] dpmax = new int[nums.length];
+        int[] dpmin = new int[nums.length];
+        dpmax[0] = nums[0];
+        dpmin[0] = nums[0];
+        int maxnum = 0;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                dpmax[i] = 0;
+                dpmin[i] = 0;
+                continue;
+            } else if (nums[i] > 0) {
+                if (dpmax[i-1] > 0) {
+                    dpmax[i] = dpmax[i-1] * nums[i];
+                } else {
+                    dpmax[i] = nums[i];
+                }
+                dpmin[i] = dpmin[i-1] * nums[i];
+            } else {
+                if (dpmin[i-1] <= 0) {
+                    dpmax[i] = dpmin[i-1] * nums[i];
+                } else {
+                    dpmax[i] = nums[i];
+                }
+                dpmin[i] = dpmax[i-1] * nums[i];
+            }
+            if (dpmax[i] > maxnum)
+                maxnum = dpmax[i];
+        }
+        return maxnum;
     }
 
     // 221 Maximal Square
