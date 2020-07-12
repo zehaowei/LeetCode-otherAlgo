@@ -1,9 +1,6 @@
 package com.isswhu;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class DP {
 
@@ -153,31 +150,72 @@ public class DP {
         int[] dpmin = new int[nums.length];
         dpmax[0] = nums[0];
         dpmin[0] = nums[0];
-        int maxnum = 0;
+        int maxnum = dpmax[0];
         for (int i = 1; i < nums.length; i++) {
             if (nums[i] == 0) {
                 dpmax[i] = 0;
                 dpmin[i] = 0;
-                continue;
             } else if (nums[i] > 0) {
                 if (dpmax[i-1] > 0) {
                     dpmax[i] = dpmax[i-1] * nums[i];
                 } else {
                     dpmax[i] = nums[i];
                 }
-                dpmin[i] = dpmin[i-1] * nums[i];
+                dpmin[i] = Math.min(dpmin[i-1] * nums[i], nums[i]);
             } else {
                 if (dpmin[i-1] <= 0) {
                     dpmax[i] = dpmin[i-1] * nums[i];
                 } else {
                     dpmax[i] = nums[i];
                 }
-                dpmin[i] = dpmax[i-1] * nums[i];
+                dpmin[i] = Math.min(dpmax[i-1] * nums[i], nums[i]);
             }
             if (dpmax[i] > maxnum)
                 maxnum = dpmax[i];
         }
         return maxnum;
+    }
+
+    // 198 house rob 1
+    public int rob1(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        else if (nums.length == 1)
+            return nums[0];
+        int i = 0, last = nums.length-1;
+        int dp2 = nums[last];
+        int dp1 = Math.max(nums[last], nums[last-1]);
+        for (int j = last-2; j >= i; j--) {
+            int newdp1 = Math.max(nums[j]+dp2, dp1);
+            dp2 = dp1;
+            dp1 = newdp1;
+        }
+        return dp1;
+    }
+
+    // 213 house robber 2
+    public int rob(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        else if (nums.length == 1)
+            return nums[0];
+        else if (nums.length == 2)
+            return Math.max(nums[0], nums[1]);
+        else {
+            return Math.max(getMaxSequence(0, nums.length-2, nums),
+                    getMaxSequence(1, nums.length-1, nums));
+        }
+    }
+
+    public int getMaxSequence(int i, int last, int[] nums) {
+        int dp2 = nums[last];
+        int dp1 = Math.max(nums[last], nums[last-1]);
+        for (int j = last-2; j >= i; j--) {
+            int newdp1 = Math.max(nums[j]+dp2, dp1);
+            dp2 = dp1;
+            dp1 = newdp1;
+        }
+        return dp1;
     }
 
     // 221 Maximal Square
