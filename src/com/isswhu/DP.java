@@ -253,6 +253,88 @@ public class DP {
         return maxnum*maxnum;
     }
 
+    // 264 ugly number
+    static class Solution264 {
+        int[] dp;
+        Solution264() {
+            dp = new int[1690];
+            dp[0] = 1;
+            int p2 = 0, p3 = 0, p5 = 0;
+            for (int i = 1; i < 1690; i++) {
+                int re2 = dp[p2]*2, re3 = dp[p3]*3, re5 = dp[p5]*5;
+                int minnum = Math.min(re2, Math.min(re3, re5));
+                if (re2 == minnum)
+                    p2++;
+                if (re3 == minnum)
+                    p3++;
+                if (re5 == minnum)
+                    p5++;
+                dp[i] = minnum;
+            }
+        }
+        public int nthUglyNumber(int n) {
+            return dp[n-1];
+        }
+    }
+
+    // 279 perfect squares
+    static class Solution279 {
+        public int numSquares(int n) {
+            int[] dp = new int[n+1];
+            dp[0] = 0;
+            dp[1] = 1;
+            for (int i = 2; i < n+1; i++)
+                dp[i] = -1;
+            return dp(n, dp);
+        }
+
+        public int dp(int n, int[] dp) {
+            if (dp[n] != -1)
+                return dp[n];
+            int minnum = Integer.MAX_VALUE;
+            for (int i = 1; i*i <= n; i++) {
+                int num = dp(n-i*i, dp) + 1;
+                if (num < minnum)
+                    minnum = num;
+            }
+            dp[n] = minnum;
+            return minnum;
+        }
+
+        public int numSquares2(int n) {
+            int[] dp = new int[n+1];
+            dp[0] = 0;
+            for (int i = 1; i <= n; i++) {
+                dp[i] = i;
+                for (int j = 1; j*j <= i; j++) {
+                    dp[i] = Math.min(dp[i], dp[i-j*j]+1);
+                }
+            }
+            return dp[n];
+        }
+    }
+
+    // 300 longest increasing subsequence
+    public int lengthOfLIS(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        int[] dp = new int[nums.length];
+        dp[0] = 1;
+        int maxnum = 1;
+        for (int i = 1; i < nums.length; i++) {
+            dp[i] = 1;
+            for (int j = 0; j <= i-1; j++) {
+                if (nums[i] > nums[j])
+                    dp[i] = Math.max(dp[i], dp[j]+1);
+            }
+            if (dp[i] > maxnum)
+                maxnum = dp[i];
+        }
+        return maxnum;
+    }
+
+
+
     // 303 Range Sum Query - Immutable
     static class NumArray {
         int[] sums;
