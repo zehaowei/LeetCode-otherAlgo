@@ -4,6 +4,91 @@ import java.util.*;
 
 public class DP {
 
+    // 10 regular expression matching
+    public boolean isMatch(String s, String p) {
+        boolean[][] dp = new boolean[s.length()+1][p.length()+1];
+        dp[0][0] = true;
+        for (int i = 1; i < s.length()+1; i++)
+            dp[i][0] = false;
+        for (int i = 0; i < s.length()+1; i++) {
+            for (int j = 1; j < p.length()+1; j++) {
+                 if (p.charAt(j-1) != '*'){
+                    if (i == 0) {
+                        dp[i][j] = false;
+                    } else if (p.charAt(j-1) == '.'){
+                        dp[i][j] = dp[i-1][j-1];
+                    } else
+                        dp[i][j] = dp[i-1][j-1] && s.charAt(i-1) == p.charAt(j-1);
+                } else {
+                    if (i == 0) {
+                        dp[i][j] = dp[i][j-2];
+                    } else {
+                        dp[i][j] = dp[i][j-2] ||
+                                (dp[i-1][j] &&
+                                        (s.charAt(i-1) == p.charAt(j-2) || p.charAt(j-2) == '.'));
+                    }
+                }
+            }
+        }
+        return dp[s.length()][p.length()];
+    }
+
+    // 32 longest valid parenthesis
+    public int longestValidParentheses(String s) {
+        if (s.length() == 0)
+            return 0;
+        int[] dp = new int[s.length()];
+        dp[0] = 0;
+        int maxnum = 0;
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == '(')
+                dp[i] = 0;
+            else {
+                int ind = i-1-dp[i-1];
+                if (ind >= 0 && s.charAt(ind) == '(') {
+                    dp[i] = dp[i-1] + 2;
+                    if (ind-1 > 0)
+                        dp[i] += dp[ind-1];
+                } else {
+                    dp[i] = 0;
+                }
+            }
+            if (dp[i] > maxnum)
+                maxnum = dp[i];
+        }
+        return maxnum;
+    }
+
+    // 44 wildcard matching
+    public boolean isMatch44(String s, String p) {
+        boolean[][] dp = new boolean[s.length()+1][p.length()+1];
+        dp[0][0] = true;
+        for (int i = 1; i < s.length()+1; i++)
+            dp[i][0] = false;
+        for (int i = 0; i < s.length()+1; i++) {
+            for (int j = 1; j < p.length()+1; j++) {
+                if (p.charAt(j-1) != '*') {
+                    if (i == 0)
+                        dp[i][j] = false;
+                    else {
+                        if (p.charAt(j-1) == '?') {
+                            dp[i][j] = dp[i-1][j-1];
+                        } else {
+                            dp[i][j] = dp[i-1][j-1] && s.charAt(i-1) == p.charAt(j-1);
+                        }
+                    }
+                } else {
+                    if (i == 0)
+                        dp[i][j] = dp[i][j-1];
+                    else {
+                        dp[i][j] = dp[i][j-1] || dp[i-1][j];
+                    }
+                }
+            }
+        }
+        return dp[s.length()][p.length()];
+    }
+
     // 91 decode ways
     public int numDecodings(String s) {
         char[] chars = s.toCharArray();
@@ -333,7 +418,38 @@ public class DP {
         return maxnum;
     }
 
+    public int lengthOfLIS2(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        int[] dp = new int[nums.length+1];
+        dp[0] = Integer.MIN_VALUE;
+        dp[1] = nums[0];
+        int len = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > dp[len]) {
+                len++;
+                dp[len] = nums[i];
+            } else {
+                int index = bsearch(nums[i], dp, 1, len);
+                if (dp[index] != nums[i])
+                    dp[index+1] = nums[i];
+            }
+        }
+        return len;
+    }
 
+    public int bsearch(int target, int[] nums, int l, int h) {
+        while (l <= h) {
+            int mid = (h-l)/2 + l;
+            if (target == nums[mid])
+                return mid;
+            else if (target < nums[mid])
+                h = mid-1;
+            else
+                l = mid+1;
+        }
+        return h;
+    }
 
     // 303 Range Sum Query - Immutable
     static class NumArray {
