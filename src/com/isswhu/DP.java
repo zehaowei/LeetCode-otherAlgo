@@ -89,6 +89,74 @@ public class DP {
         return dp[s.length()][p.length()];
     }
 
+    // 72. Edit Distance
+    public int minDistance(String word1, String word2) {
+        int[][] dp = new int[word1.length()+1][word2.length()+1];
+        for (int i = 0; i < word1.length()+1; i++)
+            dp[i][0] = i;
+        for (int j = 1; j < word2.length()+1; j++)
+            dp[0][j] = j;
+
+        for (int i = 1; i < word1.length()+1; i++) {
+            for (int j = 1; j < word2.length()+1; j++) {
+                int step1 = dp[i][j-1]+1, step2 = dp[i-1][j]+1, step3 = dp[i-1][j-1];
+                if (word1.charAt(i-1) != word2.charAt(j-1))
+                    step3++;
+                dp[i][j] = Math.min(step1, Math.min(step2, step3));
+            }
+        }
+        return dp[word1.length()][word2.length()];
+    }
+
+    // 85. Maximal Rectangle
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix.length == 0 || matrix[0].length == 0)
+            return 0;
+        int colnum = matrix[0].length;
+        int[] height = new int[colnum];
+        int[] left = new int[colnum];
+        int[] right = new int[colnum];
+        int maxarea = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            int cur_zero = matrix[i][0] == '1' ? 0 : 1;
+            for (int j = 0; j < colnum; j++) {
+                if (matrix[i][j] == '1') {
+                    if (height[j] == 0) {
+                        left[j] = cur_zero;
+                    } else {
+                        left[j] = Math.max(left[j], cur_zero);
+                    }
+                } else {
+                    cur_zero = j+1;
+                }
+            }
+            int cur_right = matrix[i][colnum-1] == '1' ? colnum-1 : colnum-2;
+            for (int j = colnum - 1; j >= 0; j--) {
+                if (matrix[i][j] == '1') {
+                    if (height[j] == 0)
+                        right[j] = cur_right;
+                    else
+                        right[j] = Math.min(right[j], cur_right);
+                    height[j] += 1;
+                } else {
+                    cur_right = j-1;
+                    height[j] = 0;
+                }
+            }
+            for (int j = 0; j < colnum; j++) {
+                int area = (right[j]-left[j]+1)*height[j];
+                if (area > maxarea)
+                    maxarea = area;
+            }
+        }
+        return maxarea;
+    }
+
+    // 87 Scramble String
+    public boolean isScramble(String s1, String s2) {
+
+    }
+
     // 91 decode ways
     public int numDecodings(String s) {
         char[] chars = s.toCharArray();
