@@ -336,8 +336,25 @@ public class DP {
         return dp[i][j];
     }
 
+    // 121 Best Time to Buy and Sell Stock
+    public int maxProfit1(int[] prices) {
+        int max = 0;
+        int i = 0, j = 1;
+        while (j < prices.length) {
+            int diff = prices[j] - prices[i];
+            if (diff >= 0) {
+                if (diff > max)
+                    max = diff;
+            } else {
+                i = j;
+            }
+            j++;
+        }
+        return max;
+    }
+
     // 123 Best Time to Buy and Sell Stock III
-    public int maxProfit(int[] prices) {
+    public int maxProfit3(int[] prices) {
 
     }
 
