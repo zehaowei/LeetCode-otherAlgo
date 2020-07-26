@@ -355,7 +355,77 @@ public class DP {
 
     // 123 Best Time to Buy and Sell Stock III
     public int maxProfit3(int[] prices) {
+        if (prices.length == 0)
+            return 0;
+        int[] left = new int[prices.length];
+        left[0] = 0;
+        int max = 0, i = 0, j = 1;
+        while (j < prices.length) {
+            int dif = prices[j] - prices[i];
+            if (dif >= 0) {
+                if (dif > max)
+                    max = dif;
+            } else {
+                i = j;
+            }
+            left[j] = max;
+            j++;
+        }
 
+        int[] right = new int[prices.length];
+        right[prices.length-1] = 0;
+        max = 0;
+        j = prices.length-1;
+        i = j-1;
+        while (i >= 0) {
+            int dif = prices[j] - prices[i];
+            if (dif >= 0) {
+                if (dif > max)
+                    max = dif;
+            } else {
+                j = i;
+            }
+            right[i] = max;
+            i--;
+        }
+
+        int answer = Math.max(right[0], left[prices.length-1]);
+        for (int k = 0; k < prices.length-1; k++) {
+            int re = left[k] + right[k+1];
+            if (re > answer)
+                answer = re;
+        }
+        return answer;
+    }
+
+    // 132 Palindrome Partitioning II
+    public int minCut(String s) {
+        if (s.length() == 0)
+            return 0;
+        boolean[][] dp = new boolean[s.length()][s.length()];
+        int[][] dp2 = new int[s.length()][s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            dp[i][i] = true;
+            dp2[i][i] = 0;
+        }
+        for (int i = 0; i < s.length()-1; i++) {
+            if (s.charAt(i) == s.charAt(i+1)) {
+                dp[i][i+1] = true;
+                dp2[i][i+1] = 0;
+            } else {
+                dp2[i][i+1] = 1;
+            }
+        }
+        for (int k = 2; k <= s.length()-1; k++) {
+            for (int i = 0; i <= s.length()-1-k; i++) {
+                dp[i][i+k] = dp[i+1][i+k-1] && s.charAt(i) == s.charAt(i+k);
+                if (dp[i][i+k]) {
+                    dp2[i][i+k] = 0;
+                } else {
+
+                }
+            }
+        }
     }
 
     // 139 word break
