@@ -419,13 +419,57 @@ public class DP {
         for (int k = 2; k <= s.length()-1; k++) {
             for (int i = 0; i <= s.length()-1-k; i++) {
                 dp[i][i+k] = dp[i+1][i+k-1] && s.charAt(i) == s.charAt(i+k);
-                if (dp[i][i+k]) {
-                    dp2[i][i+k] = 0;
-                } else {
-
+                int minCut = Integer.MAX_VALUE;
+                if (dp[i][i+k])
+                    minCut = 0;
+                else {
+                    for (int m = 0; m < k; m++) {
+                        if (dp[i][i+m]) {
+                            int re = 1 + dp2[i+m+1][i+k];
+                            if (re < minCut)
+                                minCut = re;
+                        }
+                    }
                 }
+                dp2[i][i+k] = minCut;
             }
         }
+        return dp2[0][s.length()-1];
+    }
+
+    public int minCut2(String s) {
+        boolean[][] dp = new boolean[s.length()][s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            dp[i][i] = true;
+        }
+        for (int i = 0; i < s.length()-1; i++) {
+            if (s.charAt(i) == s.charAt(i+1))
+                dp[i][i+1] = true;
+        }
+        for (int k = 2; k <= s.length()-1; k++) {
+            for (int i = 0; i <= s.length()-1-k; i++) {
+                dp[i][i+k] = dp[i+1][i+k-1] && s.charAt(i) == s.charAt(i+k);
+            }
+        }
+
+        int[] dp2 = new int[s.length()];
+        dp2[0] = 0;
+        for (int i = 1; i < s.length(); i++) {
+            if (dp[0][i]) {
+                dp2[i] = 0;
+            } else {
+                int minCut = Integer.MAX_VALUE;
+                for (int k = 0; k < i; k++) {
+                    if (dp[k+1][i]) {
+                        int re = dp2[k] + 1;
+                        if (re < minCut)
+                            minCut = re;
+                    }
+                }
+                dp2[i] = minCut;
+            }
+        }
+        return dp2[s.length()-1];
     }
 
     // 139 word break
@@ -455,6 +499,11 @@ public class DP {
             }
         }
         return dp[s.length()-1];
+    }
+
+    // 140 Word Break II
+    public List<String> wordBreak2(String s, List<String> wordDict) {
+
     }
 
     // 152 maximum product subarray
