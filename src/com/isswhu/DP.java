@@ -503,7 +503,73 @@ public class DP {
 
     // 140 Word Break II
     public List<String> wordBreak2(String s, List<String> wordDict) {
+        boolean[] dp = new boolean[s.length()+1];
+        dp[s.length()] = true;
+        HashSet<String> hset = new HashSet<>(wordDict);
+        int end = s.length()-1;
+        if (hset.contains(s.substring(end, end+1)))
+            dp[end] = true;
+        for (int i = end-1; i >= 0; i--) {
+            for (int k = i; k <= end; k++) {
+                if (hset.contains(s.substring(i,k+1))) {
+                    if (k == end) {
+                        dp[i] = true;
+                        break;
+                    } else if (dp[k+1]) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        List<String> results = new LinkedList<>();
+        List<String> curList = new LinkedList<>();
+        back(s, 0, end, hset, results, curList, dp);
+        return results;
+    }
 
+    void back(String s, int begin, int end, HashSet<String> hset,
+              List<String> results, List<String> curList, boolean[] dp) {
+        if (begin > end) {
+            StringBuilder sb = new StringBuilder();
+            for (int k = 0; k < curList.size()-1; k++) {
+                sb.append(curList.get(k));
+                sb.append(" ");
+            }
+            sb.append(curList.get(curList.size()-1));
+            results.add(sb.toString());
+            return;
+        }
+        for (int i = begin; i <= end; i++) {
+            if (hset.contains(s.substring(begin, i+1)) && dp[i+1]) {
+                curList.add(s.substring(begin, i+1));
+                back(s, i+1, end, hset, results, curList, dp);
+                curList.remove(curList.size()-1);
+            }
+        }
+    }
+
+    // real dp method
+    public List<String> wordBreak3(String s, List<String> wordDict) {
+        if (s.length() == 0)
+            return new LinkedList<>();
+        ArrayList<LinkedList<String>> dp = new ArrayList<>(s.length());
+        HashSet<String> hset = new HashSet<>(wordDict);
+        for (int i = 0; i < s.length(); i++) {
+            LinkedList<String> list = new LinkedList<>();
+            if (hset.contains(s.substring(0,i+1)))
+                list.add(s.substring(0,i+1));
+            for (int k = 1; k <= i; k++) {
+                if (dp.get(k-1).size() != 0
+                        && hset.contains(s.substring(k,i+1))) {
+                    for (String str : dp.get(k-1)) {
+                        list.add(str + " " + s.substring(k, i + 1));
+                    }
+                }
+            }
+            dp.add(list);
+        }
+        return dp.get(s.length()-1);
     }
 
     // 152 maximum product subarray

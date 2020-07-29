@@ -3,6 +3,11 @@ package com.isswhu;
 import java.util.Stack;
 
 public class BasicDataStructure {
+    // 48 Rotate Image
+    public void rotate(int[][] matrix) {
+
+    }
+
     // 84 Largest Rectangle in Histogram
     public static int largestRectangleArea(int[] heights) {
         Stack<Integer> stk = new Stack<>();
