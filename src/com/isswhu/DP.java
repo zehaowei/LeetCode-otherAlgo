@@ -629,6 +629,42 @@ public class DP {
         return dp[0][0];
     }
 
+    // 188. Best Time to Buy and Sell Stock IV
+    public int maxProfit(int k, int[] prices) {
+        int days = prices.length;
+        if (days == 0 || days == 1 || k == 0)
+            return 0;
+        if (k > days/2) {
+            int re = 0;
+            for (int i = 0; i < days-1; i++) {
+                if (prices[i+1] > prices[i])
+                    re += prices[i+1] - prices[i];
+            }
+            return re;
+        }
+        int[][] dp = new int[k+1][2];
+        for (int i = 0; i < days; i++) {
+            dp[0][0] = 0;
+            dp[0][1] = Integer.MIN_VALUE;
+        }
+        for (int j = 1; j <= k; j++) {
+            dp[j][0] = 0;
+            dp[j][1] = -prices[0];
+        }
+
+        for (int i = 1; i < days; i++) {
+            int last = 0;  // dp[i-1][j-1][0]
+            for (int j = 1; j <= k; j++) {
+                int temp = dp[j][0]; // store the dp[i-1][j-1][0] that would be used next round
+                dp[j][0] = Integer.max(dp[j][0], dp[j][1] + prices[i]);
+                dp[j][1] = Integer.max(dp[j][1], last - prices[i]);
+                last = temp;
+            }
+        }
+
+        return dp[k][0];
+    }
+
     // 198 house rob 1
     public int rob1(int[] nums) {
         if (nums.length == 0)
