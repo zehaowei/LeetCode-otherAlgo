@@ -81,5 +81,80 @@ public class BinarySearch {
         return false;
     }
 
+    // 81. Search in Rotated Sorted Array II
+    public boolean search(int[] nums, int target) {
+        int n = nums.length;
+        if (n == 0)
+            return false;
+        int cut = 0;
+        for (; cut < n-1; cut++) {
+            if (nums[cut] > nums[cut+1])
+                break;
+        }
+
+        if (cut == n-1)
+            return bsearch(nums, 0, cut, target);
+        else
+            return bsearch(nums, 0, cut, target) || bsearch(nums, cut+1, n-1, target);
+    }
+
+    boolean bsearch(int[] nums, int l, int h, int target) {
+        while (l <= h) {
+            int mid = l + (h-l)/2;
+            if (nums[mid] == target)
+                return true;
+            else if (nums[mid] < target)
+                l = mid + 1;
+            else
+                h = mid - 1;
+        }
+        return false;
+    }
+
+    public boolean search2(int[] nums, int target) {
+        int n = nums.length;
+        if (n == 0)
+            return false;
+        int start = 0, end = n-1;
+        while (start <= end) {
+            int mid = start + (end-start)/2;
+            if (nums[mid] == target || nums[start] == target || nums[end] == target)
+                return true;
+            else if (nums[start] == nums[mid])
+                start++;
+            else if (nums[start] < nums[mid]) {
+                if (nums[start] < target && target < nums[mid])
+                    return bsearch(nums, start+1, mid-1, target);
+                else
+                    start = mid+1;
+            } else {
+                if (nums[mid] < target && target < nums[end])
+                    return bsearch(nums, mid+1, end-1, target);
+                else
+                    end = mid-1;
+            }
+        }
+        return false;
+    }
+
+    // 153. Find Minimum in Rotated Sorted Array
+    public int findMin(int[] nums) {
+        int n = nums.length;
+        if (n == 1)
+            return nums[0];
+        if (nums[0] < nums[n-1])
+            return nums[0];
+        int s = 0, e = n-1;
+        while (s < e) {
+            int mid = s + (e-s)/2;
+            if (nums[mid] > nums[mid+1])
+                return nums[mid+1];
+            if (nums[s] < nums[mid])
+                s = mid+1;
+            else
+                e = mid;
+        }
+        return 0;
+    }
 
 }
