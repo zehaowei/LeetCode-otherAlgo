@@ -157,4 +157,33 @@ public class BinarySearch {
         return 0;
     }
 
+    // 154. Find Minimum in Rotated Sorted Array II
+    public int findMin2(int[] nums) {
+        int n = nums.length;
+        if (n == 1)
+            return nums[0];
+        if (nums[0] < nums[n-1])
+            return nums[0];
+        int s = 0, e = n-1;
+        while (s < e) {
+            int mid = s + (e-s)/2;
+            if (nums[mid] > nums[mid+1])
+                return nums[mid+1];
+            if (nums[s] < nums[mid])
+                s = mid+1;
+            else if (nums[s] > nums[mid])
+                e = mid;
+            else {
+                if (nums[s] > nums[s+1])
+                    return nums[s+1];
+                s++;
+            }
+        }
+        return nums[0];
+    }
+
+    // 162. Find Peak Element
+    public int findPeakElement(int[] nums) {
+
+    }
 }
