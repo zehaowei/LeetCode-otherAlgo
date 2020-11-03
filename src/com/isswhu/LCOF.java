@@ -195,4 +195,75 @@ public class LCOF {
         }
         return numbers[l];
     }
+
+    // 12. 矩阵中的路径
+    public boolean exist(char[][] board, String word) {
+        int m = board.length, n = board[0].length;
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == word.charAt(0)) {
+                    visited[i][j] = true;
+                    boolean re = backtrack(board, i, j, word, 1, visited);
+                    if (re) {
+                        return true;
+                    } else {
+                        visited[i][j] = false;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    boolean backtrack(char[][] board, int a, int b, String word, int wdIndex, boolean[][] visited) {
+        if (wdIndex >= word.length())
+            return true;
+        int[] arr1 = {a-1, a+1, a, a}, arr2 = {b, b, b-1, b+1};
+        for (int i = 0; i < 4; i++) {
+            int x = arr1[i], y = arr2[i];
+            if (x >= 0 && x < board.length && y >= 0 && y < board[0].length
+            && board[x][y] == word.charAt(wdIndex) && !visited[x][y]) {
+                visited[x][y] = true;
+                if (backtrack(board, x, y, word, wdIndex+1, visited))
+                    return true;
+                else
+                    visited[x][y] = false;
+            }
+        }
+        return false;
+    }
+
+    // 13. 机器人的运动范围
+    public int movingCount(int m, int n, int k) {
+        boolean[][] visited = new boolean[m][n];
+        return dfs(0, 0, m, n, k, visited);
+    }
+
+    int dfs(int a, int b, int m, int n, int k, boolean[][] visited) {
+        if (a < 0 || a >= m || b < 0 || b >= n || !isValid(a,b,k) || !visited[a][b])
+            return 0;
+        visited[a][b] = true;
+        int sum = 1;
+        sum += dfs(a-1, b, m, n, k, visited);
+        sum += dfs(a+1, b, m, n, k, visited);
+        sum += dfs(a, b-1, m, n, k, visited);
+        sum += dfs(a, b+1, m, n, k, visited);
+        return sum;
+    }
+
+    boolean isValid(int a, int b, int k) {
+        int sum = 0;
+        while (a > 0) {
+            sum += a%10;
+            a = a/10;
+        }
+        while (b > 0) {
+            sum += b%10;
+            b = b/10;
+        }
+        return sum <= k;
+    }
+
+    //
 }
