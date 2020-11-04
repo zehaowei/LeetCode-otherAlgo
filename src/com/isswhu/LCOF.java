@@ -265,5 +265,88 @@ public class LCOF {
         return sum <= k;
     }
 
-    //
+    // 14- I. 剪绳子
+    public int cuttingRope(int n) {
+        if (n == 2)
+            return 1;
+        int[] dp = new int[n];
+        dp[1] = 1;
+        dp[2] = 2;
+        int max = 0;
+        for (int i = 1; i <= n/2; i++) {
+            int re = func(i, dp) * func(n-i, dp);
+            if (re > max)
+                max = re;
+        }
+        return max;
+    }
+
+    int func(int n, int[] dp) {
+        if (dp[n] != 0)
+            return dp[n];
+        int max = n;
+        for (int i = 1; i <= n/2; i++) {
+            int re = func(i, dp) * func(n-i, dp);
+            if (re > max)
+                max = re;
+        }
+        dp[n] = max;
+        return max;
+    }
+
+    // 15. 二进制中1的个数
+    public int hammingWeight(int n) {
+        int num = 0, mask = 1;
+        for (int i = 0; i < 32; i++) {
+            if ((n & mask) != 0)
+                num++;
+            mask = mask << 1;
+        }
+        return num;
+    }
+
+    //  16. 数值的整数次方
+    public double myPow(double x, int n) {
+        if (n == 0)
+            return 1;
+        long times = n;
+        if (n < 0) {
+            times = -times;
+            x = 1/x;
+        }
+        x = pow_log(x, times);
+        return x;
+    }
+
+    double pow_log(double x, long n) {
+        double origin = x, old = x;
+        long times = 1;
+        while (times < n) {
+            old = x;
+            x *= x;
+            times <<= 1;
+        }
+        if (times == n)
+            return x;
+        else
+            return old*pow_log(origin, n-times/2);
+    }
+
+    public double myPow2(double x, int n) {
+        if (n == 0)
+            return 1;
+        long times = n;
+        if (n < 0) {
+            times = -times;
+            x = 1/x;
+        }
+        double res = 1;
+        while (times > 0) {
+            if ((times & 1) == 1)
+                res *= x;
+            x *= x;
+            times >>= 1;
+        }
+        return res;
+    }
 }

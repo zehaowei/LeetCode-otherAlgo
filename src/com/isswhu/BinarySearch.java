@@ -228,4 +228,29 @@ public class BinarySearch {
         }
         return null;
     }
+
+    // 209. 长度最小的子数组
+    public int minSubArrayLen(int s, int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        int re = Integer.MAX_VALUE, sum = nums[0];
+        int l = 0, r = 0;
+        while (l <= r) {
+            if (sum >= s) {
+                if (r-l+1 < re)
+                    re = r-l+1;
+                sum -= nums[l++];
+            } else {
+                r++;
+                if (r < nums.length)
+                    sum += nums[r];
+                else
+                    break;
+            }
+        }
+        if (re == Integer.MAX_VALUE)
+            return 0;
+        else
+            return re;
+    }
 }
