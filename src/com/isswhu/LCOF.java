@@ -349,4 +349,145 @@ public class LCOF {
         }
         return res;
     }
+
+    // 17. 打印从1到最大的n位数
+    public int[] printNumbers(int n) {
+        int base = 1;
+        for (int i = 1; i <= n; i++)
+            base *= 10;
+        int[] re = new int[base-1];
+        for (int i = 1; i < base; i++) {
+            re[i-1] = i;
+        }
+        return re;
+    }
+
+    // 18. 删除链表的节点
+    /**
+     * Definition for singly-linked list.
+     * public class ListNode {
+     *     int val;
+     *     ListNode next;
+     *     ListNode(int x) { val = x; }
+     * }
+     */
+    public ListNode deleteNode(ListNode head, int val) {
+        ListNode p = head, q = null;
+        while (p != null) {
+            if (p.val == val && p == head) {
+                head = head.next;
+                p.next = null;
+                break;
+            } else if (p.val == val) {
+                q.next = p.next;
+                p.next = null;
+                break;
+            } else {
+                q = p;
+                p = p.next;
+            }
+        }
+        return head;
+    }
+
+    // 19. 正则表达式匹配
+    public boolean isMatch(String s, String p) {
+        boolean[][] dp = new boolean[s.length()+1][p.length()+1];
+        dp[0][0] = true;
+        for (int j = 2; j <= p.length(); j++) {
+            if (p.charAt(j-1) == '*' && dp[0][j-2])
+                dp[0][j] = true;
+        }
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 1; j <= p.length(); j++) {
+                // when using charAt, index should minus 1
+                if (p.charAt(j-1) == '*') {
+                    if (dp[i][j-2] || (dp[i-1][j] && (p.charAt(j-2) == '.' || s.charAt(i-1) == p.charAt(j-2))))
+                        dp[i][j] = true;
+                } else if (p.charAt(j-1) == '.' || s.charAt(i-1) == p.charAt(j-1)) {
+                    dp[i][j] = dp[i-1][j-1];
+                }
+            }
+        }
+        return dp[s.length()][p.length()];
+    }
+
+    // 21. 调整数组顺序使奇数位于偶数前面
+    public int[] exchange(int[] nums) {
+        int p1 = -1, p2 = 0;
+        while (p2 < nums.length) {
+            if ((nums[p2] & 1) == 1) {
+                p1++;
+                if (p1 < p2) {
+                    int tmp = nums[p1];
+                    nums[p1] = nums[p2];
+                    nums[p2] = tmp;
+                }
+            }
+            p2++;
+        }
+        return nums;
+    }
+
+    // 22. 链表中倒数第k个节点
+    /**
+     * Definition for singly-linked list.
+     * public class ListNode {
+     *     int val;
+     *     ListNode next;
+     *     ListNode(int x) { val = x; }
+     * }
+     */
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        ListNode p1 = head, p2 = head;
+        for (int i = 1; i < k; i++) {
+            p2 = p2.next;
+        }
+        while (p2.next != null) {
+            p2 = p2.next;
+            p1 = p1.next;
+        }
+        return p1;
+    }
+
+    // 24. 反转链表
+    public ListNode reverseList(ListNode head) {
+        if (head == null)
+            return null;
+        ListNode pre = head, cur = head.next, next = null;
+        if (cur == null)
+            return pre;
+        next = cur.next;
+        pre.next = null;
+        while (true) {
+            cur.next = pre;
+            pre = cur;
+            cur = next;
+            if (cur != null)
+                next = cur.next;
+            else
+                break;
+        }
+        return pre;
+    }
+
+    // 25. 合并两个排序的链表
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode p1 = l1, p2 = l2, head = new ListNode(-1), cur = head;
+        while (p1 != null && p2 != null) {
+            if (p1.val <= p2.val) {
+                cur.next = p1;
+                p1 = p1.next;
+            } else {
+                cur.next = p2;
+                p2 = p2.next;
+            }
+            cur = cur.next;
+        }
+        if (p1 == null)
+            cur.next = p2;
+        else
+            cur.next = p1;
+        return head.next;
+    }
 }
