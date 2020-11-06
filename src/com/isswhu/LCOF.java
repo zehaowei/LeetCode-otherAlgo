@@ -490,4 +490,194 @@ public class LCOF {
             cur.next = p1;
         return head.next;
     }
+
+    // 26. 树的子结构
+    public boolean isSubStructure(TreeNode A, TreeNode B) {
+        if (A == null || B == null)
+            return false;
+        if (A.val == B.val && isSame(A.left, B.left) && isSame(A.right, B.right)) {
+            return true;
+        } else
+            return isSubStructure(A.left, B) || isSubStructure(A.right, B);
+    }
+
+    boolean isSame(TreeNode A, TreeNode B) {
+        if (B == null)
+            return true;
+        else if (A == null)
+            return false;
+        else if (A.val == B.val)
+            return (isSame(A.left, B.left) && isSame(A.right, B.right));
+        else
+            return false;
+    }
+
+    // 27. 二叉树的镜像
+    public TreeNode mirrorTree(TreeNode root) {
+        if (root == null)
+            return null;
+        TreeNode old = root.left;
+        root.left = mirrorTree(root.right);
+        root.right = mirrorTree(old);
+        return root;
+    }
+
+    // 28. 对称的二叉树
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null)
+            return true;
+        return recur(root.left, root.right);
+    }
+
+    boolean recur(TreeNode A, TreeNode B) {
+        if (A == null && B == null)
+            return true;
+        else if (A == null || B == null || A.val != B.val)
+            return false;
+        return recur(A.left, B.right) && recur(A.right, B.left);
+    }
+
+    // 29. 顺时针打印矩阵
+    public int[] spiralOrder(int[][] matrix) {
+        int m = matrix.length;
+        if (m == 0)
+            return new int[]{};
+        int n = matrix[0].length;
+        if (n == 0)
+            return new int[]{};
+        int[] re = new int[m*n];
+        int i = 0, j = 0, round = 0, ind = 0;
+        while (true) {
+            if (j > n-1-round) break;
+            for (; j <= n-1-round; j++)
+                re[ind++] = matrix[i][j];
+            j--;
+
+            i++;
+            if (i > m-1-round) break;
+            for (; i <= m-1-round; i++)
+                re[ind++] = matrix[i][j];
+            i--;
+
+            j--;
+            if (j < round) break;
+            for (; j >= round; j--)
+                re[ind++] = matrix[i][j];
+            j++;
+
+            i--;
+            if (i < 1+round) break;
+            for (; i >= 1+round; i--)
+                re[ind++] = matrix[i][j];
+            i++;
+            j++;
+            round++;
+        }
+        return re;
+    }
+
+    public List<Integer> spiralOrder2(int[][] matrix) {
+        int m = matrix.length;
+        if (m == 0) return new ArrayList<>();
+        int n = matrix[0].length;
+        if (n == 0) return new ArrayList<>();
+        List<Integer> re = new ArrayList<>(m*n);
+        int t = 0, r = n-1, b = m-1, l = 0, i;
+        while (true) {
+            for (i = l; i <= r; i++)
+                re.add(matrix[t][i]);
+            if (++t > b) break;
+
+            for (i = t; i <= b; i++)
+                re.add(matrix[i][r]);
+            if (--r < l) break;
+
+            for (i = r; i >= l; i--)
+                re.add(matrix[b][i]);
+            if (--b < t) break;
+
+            for (i = b; i >= t; i--)
+                re.add(matrix[i][l]);
+            if (++l > r) break;
+        }
+        return re;
+    }
+
+    //  30. 包含min函数的栈
+    class MinStack {
+
+        Stack<Integer> stk;
+        Stack<Integer> helper;
+
+        /** initialize your data structure here. */
+        public MinStack() {
+            stk = new Stack<>();
+            helper = new Stack<>();
+        }
+
+        public void push(int x) {
+            stk.push(x);
+            if (helper.isEmpty() || x <= helper.peek())
+                helper.push(x);
+        }
+
+        public void pop() {
+            if (stk.peek().equals(helper.peek()))
+                helper.pop();
+            stk.pop();
+        }
+
+        public int top() {
+            return stk.peek();
+        }
+
+        public int min() {
+            return helper.peek();
+        }
+    }
+
+    // 31. 栈的压入、弹出序列
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        if (pushed.length == 0 || pushed.length == 1)
+            return true;
+        boolean[] visited = new boolean[pushed.length];
+        int cur = -1;
+        for (int i = 0; i < popped.length; i++) {
+            int left = cur-1;
+            for (; left >= 0; left--) {
+                if (!visited[left]) break;
+            }
+            if (left >= 0 && pushed[left] == popped[i]) {
+                cur = left;
+                visited[cur] = true;
+            } else {
+                int right = cur+1;
+                for (; right < pushed.length; right++) {
+                    if (pushed[right] == popped[i]) {
+                        cur = right;
+                        visited[cur] = true;
+                        break;
+                    }
+                }
+                if (right == pushed.length)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean validateStackSequences2(int[] pushed, int[] popped) {
+        Stack<Integer> stk = new Stack<>();
+        if (pushed.length == 0 || pushed.length == 1)
+            return true;
+        int ind = 0;
+        for (int num : pushed) {
+            stk.push(num);
+            while (!stk.empty() && stk.peek().equals(popped[ind])) {
+                stk.pop();
+                ind++;
+            }
+        }
+        return stk.empty();
+    }
 }
