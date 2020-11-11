@@ -680,4 +680,152 @@ public class LCOF {
         }
         return stk.empty();
     }
+
+    // 32 - I. 从上到下打印二叉树
+    public int[] levelOrder(TreeNode root) {
+        if (root == null)
+            return new int[]{};
+        Queue<TreeNode> q = new LinkedList<>();
+        ArrayList<Integer> list = new ArrayList<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            TreeNode node = q.poll();
+            list.add(node.val);
+            if (node.left != null)
+                q.add(node.left);
+            if (node.right != null)
+                q.add(node.right);
+        }
+        int[] re = new int[list.size()];
+        for (int i = 0; i < list.size(); i++)
+            re[i] = list.get(i);
+        return re;
+    }
+
+    // 32 - II. 从上到下打印二叉树 II
+    public List<List<Integer>> levelOrder2(TreeNode root) {
+        if (root == null)
+            return new ArrayList<>();
+        Queue<TreeNode> q = new LinkedList<>();
+        ArrayList<List<Integer>> list = new ArrayList<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            List<Integer> l = new ArrayList<>();
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = q.poll();
+                l.add(node.val);
+                if (node.left != null)
+                    q.add(node.left);
+                if (node.right != null)
+                    q.add(node.right);
+            }
+            list.add(l);
+        }
+        return list;
+    }
+
+    // 32 - III. 从上到下打印二叉树 III
+    public List<List<Integer>> levelOrder3(TreeNode root) {
+        if (root == null)
+            return new ArrayList<>();
+        ArrayList<List<Integer>> list = new ArrayList<>();
+        Deque<TreeNode> old = new LinkedList<>();
+        Deque<TreeNode> even = new LinkedList<>();
+        old.add(root);
+        while (!old.isEmpty() || !even.isEmpty()) {
+            List<Integer> l = new ArrayList<>();
+            if (!old.isEmpty()) {
+                for (int i = old.size(); i > 0; i--) {
+                    TreeNode node = old.pollLast();
+                    l.add(node.val);
+                    if (node.left != null)
+                        even.add(node.left);
+                    if (node.right != null)
+                        even.add(node.right);
+                }
+            } else {
+                for (int i = even.size(); i > 0; i--) {
+                    TreeNode node = even.pollLast();
+                    l.add(node.val);
+                    if (node.right != null)
+                        old.add(node.right);
+                    if (node.left != null)
+                        old.add(node.left);
+                }
+            }
+            list.add(l);
+        }
+        return list;
+    }
+
+    //  33. 二叉搜索树的后序遍历序列
+    public boolean verifyPostorder(int[] postorder) {
+        if (postorder == null || postorder.length == 0)
+            return true;
+        else
+            return verify(postorder, 0, postorder.length-1);
+    }
+
+    boolean verify(int[] postorder, int l, int r) {
+        if (l >= r)
+            return true;
+        int root = postorder[r];
+        int l1 = l-1;
+        while (l1 < r-1) {
+            if (postorder[l1+1] < root)
+                l1++;
+            else
+                break;
+        }
+        int ind = l1+1;
+        while (ind < r) {
+            if (postorder[ind] < root)
+                return false;
+            ind++;
+        }
+        return verify(postorder, l, l1) && verify(postorder, l1+1, r-1);
+    }
+
+    // 34. 二叉树中和为某一值的路径
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> re = new ArrayList<>();
+        if (root == null)
+            return re;
+        ArrayList<Integer> list = new ArrayList<>();
+        backTrack(re, list, root, 0, sum);
+        return re;
+    }
+
+    void backTrack(List<List<Integer>> re, ArrayList<Integer> list, TreeNode root, int current, int sum) {
+        list.add(root.val);
+        if (root.left != null) {
+            backTrack(re, list, root.left, current+root.val, sum);
+        }
+        if (root.right != null) {
+            backTrack(re, list, root.right, current+root.val, sum);
+        }
+        if (root.left == null && root.right == null && current+root.val == sum) {
+            ArrayList<Integer> l = new ArrayList<>(list);
+            re.add(l);
+        }
+        list.remove(list.size()-1);
+    }
+
+    // 35. 复杂链表的复制
+    class Node {
+        int val;
+        Node next;
+        Node random;
+
+        public Node(int val) {
+            this.val = val;
+            this.next = null;
+            this.random = null;
+        }
+    }
+
+    public Node copyRandomList(Node head) {
+
+    }
 }
