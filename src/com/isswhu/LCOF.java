@@ -813,19 +813,158 @@ public class LCOF {
     }
 
     // 35. 复杂链表的复制
-    class Node {
-        int val;
-        Node next;
-        Node random;
+//    class Node {
+//        int val;
+//        Node next;
+//        Node random;
+//
+//        public Node(int val) {
+//            this.val = val;
+//            this.next = null;
+//            this.random = null;
+//        }
+//    }
+//
+//    public Node copyRandomList(Node head) {
+//        if (head == null) return null;
+//        Node newHead = new Node(head.val);
+//        Node p1 = head.next, p2 = newHead;
+//        HashMap<Node, Node> hmap = new HashMap<>();
+//        hmap.put(head, newHead);
+//        while (p1 != null) {
+//            p2.next = new Node(p1.val);
+//            hmap.put(p1, p2.next);
+//            p1 = p1.next;
+//            p2 = p2.next;
+//        }
+//        p1 = head;
+//        p2 = newHead;
+//        while (p1 != null) {
+//            if (p1.random == null)
+//                p2.random = null;
+//            else if (p1.random == p1)
+//                p2.random = p2;
+//            else {
+//                p2.random = hmap.get(p1.random);
+//            }
+//            p1 = p1.next;
+//            p2 = p2.next;
+//        }
+//        return newHead;
+//    }
 
-        public Node(int val) {
-            this.val = val;
-            this.next = null;
-            this.random = null;
+    // 36. 二叉搜索树与双向链表
+    class Node {
+        public int val;
+        public Node left;
+        public Node right;
+
+        public Node() {}
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val,Node _left,Node _right) {
+            val = _val;
+            left = _left;
+            right = _right;
         }
     }
 
-    public Node copyRandomList(Node head) {
+    Node min = null;
+    Node max = null;
 
+    public Node treeToDoublyList(Node root) {
+        if (root == null)
+            return null;
+        recur(root);
+        min.left = max;
+        max.right = min;
+        return min;
+    }
+
+    void recur(Node root) {
+        if (root == null)
+            return;
+        Node head = null, tail = null;
+        if (root.left == null)
+            head = root;
+        else {
+            recur(root.left);
+            head = min;
+            max.right = root;
+            root.left = max;
+        }
+
+        if (root.right == null)
+            tail = root;
+        else {
+            recur(root.right);
+            tail = max;
+            root.right = min;
+            min.left = root;
+        }
+        max = tail;
+        min = head;
+    }
+
+    // 37. 序列化二叉树
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if (root == null)
+            return "";
+        StringBuilder str = new StringBuilder();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        str.append(root.val).append(",");
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            if (node.left != null) {
+                queue.add(node.left);
+                str.append(node.left.val).append(",");
+            } else {
+                str.append("null,");
+            }
+
+            if (node.right != null) {
+                queue.add(node.right);
+                str.append(node.right.val).append(",");
+            } else {
+                str.append("null,");
+            }
+        }
+        return str.substring(0, str.length()-1);
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data.equals(""))
+            return null;
+        String[] nodes = data.split(",");
+        TreeNode[] maps = new TreeNode[nodes.length];
+        int slow = 0, fast = 1;
+        TreeNode head = new TreeNode(Integer.parseInt(nodes[0]));
+        maps[0] = head;
+        while (fast < nodes.length) {
+            if (nodes[slow].equals("null")) {
+                slow++;
+                continue;
+            }
+            if (!nodes[fast].equals("null")) {
+                TreeNode left = new TreeNode(Integer.parseInt(nodes[fast]));
+                maps[fast] = left;
+                maps[slow].left = left;
+            }
+            fast++;
+            if (!nodes[fast].equals("null")) {
+                TreeNode right = new TreeNode(Integer.parseInt(nodes[fast]));
+                maps[fast] = right;
+                maps[slow].right = right;
+            }
+            fast++;
+            slow++;
+        }
+        return head;
     }
 }
