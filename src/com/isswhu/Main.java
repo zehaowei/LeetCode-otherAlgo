@@ -1,79 +1,46 @@
 package com.isswhu;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) {
+        //int[] arr = new int[]{0,1,1,1,4,5,3,7,7,8,10,2,7,8,0,5,2,16,12,1,19,15,5,18,2,2,22,15,8,22,17,6,22,6,22,26,32,8,10,11,2,26,9,12,9,7,28,33,20,7,2,17,44,3,52,27,2,23,19,56,56,58,36,31,1,19,19,6,65,49,27,63,29,1,69,47,56,61,40,43,10,71,60,66,42,44,10,12,83,69,73,2,65,93,92,47,35,39,13,75};
+        int[] arr = new int[]{0,1,1,1,4,5,3,7,};
         Test t = new Test();
-        LCOF.TreeNode node1 = new LCOF.TreeNode(1);
-        node1.left = new LCOF.TreeNode(2);
-        node1.right = new LCOF.TreeNode(3);
-        node1.right.left = new LCOF.TreeNode(4);
-        node1.right.right = new LCOF.TreeNode(5);
-        LCOF.TreeNode head = t.deserialize(t.serialize(node1));
+        t.quicksort(arr, 0, arr.length-1);
+        for (int i = 0; i < arr.length; i++)
+            System.out.print(arr[i]+" ");
     }
 }
 
 class Test {
-    // Encodes a tree to a single string.
-    public String serialize(LCOF.TreeNode root) {
-        if (root == null)
-            return "";
-        StringBuilder str = new StringBuilder();
-        Queue<LCOF.TreeNode> queue = new LinkedList<>();
-        queue.add(root);
-        str.append(root.val).append(",");
-        while (!queue.isEmpty()) {
-            LCOF.TreeNode node = queue.poll();
-            if (node.left != null) {
-                queue.add(node.left);
-                str.append(node.left.val).append(",");
-            } else {
-                str.append("null,");
-            }
-
-            if (node.right != null) {
-                queue.add(node.right);
-                str.append(node.right.val).append(",");
-            } else {
-                str.append("null,");
-            }
-        }
-        return str.substring(0, str.length()-1);
+    void quicksort(int[] arr, int l, int r) {
+        if (l >= r)
+            return;
+        int ind = partition(arr, l, r);
+        quicksort(arr, l, ind-1);
+        quicksort(arr, ind+1, r);
     }
 
-    // Decodes your encoded data to tree.
-    public LCOF.TreeNode deserialize(String data) {
-        if (data.equals(""))
-            return null;
-        String[] nodes = data.split(",");
-        LCOF.TreeNode[] maps = new LCOF.TreeNode[nodes.length];
-        int slow = 0, fast = 1;
-        LCOF.TreeNode head = new LCOF.TreeNode(Integer.parseInt(nodes[0]));
-        maps[0] = head;
-        while (fast < nodes.length) {
-            if (nodes[slow].equals("null")) {
-                slow++;
-                continue;
+    int partition(int[] arr, int l, int r) {
+        int p1 = l, p2 = l+1;
+        while (p2 <= r) {
+            if (arr[l] > arr[p2]) {
+                p1++;
+                if (p1 != p2) {
+                    swp(arr, p1, p2);
+                }
             }
-            if (!nodes[fast].equals("null")) {
-                LCOF.TreeNode left = new LCOF.TreeNode(Integer.parseInt(nodes[fast]));
-                maps[fast] = left;
-                maps[slow].left = left;
-            }
-            fast++;
-            if (!nodes[fast].equals("null")) {
-                LCOF.TreeNode right = new LCOF.TreeNode(Integer.parseInt(nodes[fast]));
-                maps[fast] = right;
-                maps[slow].right = right;
-            }
-            fast++;
-            slow++;
+            p2++;
         }
-        return head;
+        swp(arr, l, p1);
+        return p1;
+    }
+
+    void swp(int[] arr, int a, int b) {
+        int temp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = temp;
     }
 }

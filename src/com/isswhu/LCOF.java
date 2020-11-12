@@ -967,4 +967,100 @@ public class LCOF {
         }
         return head;
     }
+
+    // 38. 字符串的排列
+    public String[] permutation(String s) {
+        LinkedList<String> list = new LinkedList<>();
+        backtrace(list, 0, s.toCharArray());
+        return list.toArray(new String[list.size()]);
+    }
+
+    void backtrace(LinkedList<String> list, int x, char[] s) {
+        if (x == s.length) {
+            list.add(new String(s));
+            return;
+        }
+        HashSet<Character> hset = new HashSet<>();
+        for (int i = x; i < s.length; i++) {
+            if (hset.contains(s[i]))
+                continue;
+            hset.add(s[i]);
+            swap(x, i, s);
+            backtrace(list,x+1, s);
+            swap(x, i, s);
+        }
+    }
+
+    void swap(int a, int b, char[] s) {
+        char tmp = s[a];
+        s[a] = s[b];
+        s[b] = tmp;
+    }
+
+    // 39. 数组中出现次数超过一半的数字
+    public int majorityElement(int[] nums) {
+        if (nums.length == 1 || nums.length == 2)
+            return nums[0];
+        int p1 = 0, p2 = 1, score = 1;
+        while (p2 < nums.length) {
+            if (nums[p2] != nums[p1])
+                score--;
+            else
+                score++;
+            if (score == 0) {
+                p1 = p2+1;
+                p2 = p1+1;
+                score = 1;
+            } else
+                p2++;
+        }
+        return nums[p1];
+    }
+
+    // 40. 最小的k个数
+    public int[] getLeastNumbers(int[] arr, int k) {
+        if (k == 0 || k >= arr.length)
+            return new int[]{};
+        int l = 0, r = arr.length-1;
+        int mid = partition(arr, l, r);
+        while (mid != k-1) {
+            if (mid > k-1)
+                r = mid-1;
+            else
+                l = mid+1;
+            mid = partition(arr, l, r);
+        }
+        int[] re = new int[k];
+        System.arraycopy(arr, 0, re, 0, k);
+        return re;
+    }
+
+    int partition(int[] arr, int l, int r) {
+        if (l > r)
+            return -1;
+        else if (l == r)
+            return l;
+        int tar = new Random().nextInt(r - l + 1) + l;
+        swp(arr, l, tar);
+        int p1 = l, p2 = l+1;
+        while (p2 <= r) {
+            if (arr[l] > arr[p2]) {
+                p1++;
+                if (p1 != p2) {
+                    swp(arr, p1, p2);
+                }
+            }
+            p2++;
+        }
+        swp(arr, l, p1);
+        return p1;
+    }
+
+    void swp(int[] arr, int a, int b) {
+        int temp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = temp;
+    }
+
+
 }
