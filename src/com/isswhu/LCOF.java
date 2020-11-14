@@ -1062,5 +1062,64 @@ public class LCOF {
         arr[b] = temp;
     }
 
+    // 41. 数据流中的中位数
+    class MedianFinder {
 
+        PriorityQueue<Integer> minHeap;
+        PriorityQueue<Integer> maxHeap; // keep this size >= minHeap
+
+        public MedianFinder() {
+            minHeap = new PriorityQueue<>();
+            maxHeap = new PriorityQueue<>(Comparator.reverseOrder());
+        }
+
+        public void addNum(int num) {
+            if (minHeap.size() == maxHeap.size()) {
+                minHeap.add(num);
+                maxHeap.add(minHeap.poll());
+            } else {
+                maxHeap.add(num);
+                minHeap.add(maxHeap.poll());
+            }
+        }
+
+        public double findMedian() {
+            if (minHeap.size() == maxHeap.size()) {
+                return (double)(minHeap.peek() + maxHeap.peek()) / 2.0;
+            } else
+                return maxHeap.peek();
+        }
+    }
+
+    // 42. 连续子数组的最大和
+    public int maxSubArray(int[] nums) {
+        int a = nums[0], maxsum = a;
+        for (int i = 1; i < nums.length; i++) {
+            a = a > 0 ? a+nums[i] : nums[i];
+            maxsum = Math.max(maxsum, a);
+        }
+        return maxsum;
+    }
+
+    // 43. 1～n 整数中 1 出现的次数
+    public int countDigitOne(int n) {
+        int low = 0, cur = n%10, digit = 1, high = n/10, sum = 0;
+        while (n/digit > 0) {
+            switch (cur) {
+                case 0:
+                    sum += high * digit;
+                    break;
+                case 1:
+                    sum += high * digit + low + 1;
+                    break;
+                default:
+                    sum += (high+1) * digit;
+            }
+            cur = high % 10;
+            high /= 10;
+            digit *= 10;
+            low = n % digit;
+        }
+        return sum;
+    }
 }
