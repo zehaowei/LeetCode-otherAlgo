@@ -1202,6 +1202,188 @@ public class LCOF {
 
     // 47. 礼物的最大价值
     public int maxValue(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        for (int j = n-2; j >= 0; j--)
+            grid[m-1][j] += grid[m-1][j+1];
+        for (int i = m-2; i >= 0; i--)
+            grid[i][n-1] += grid[i+1][n-1];
+        for (int i = m-2; i >= 0; i--) {
+            for (int j = n-2; j >= 0; j--) {
+                grid[i][j] += Math.max(grid[i+1][j], grid[i][j+1]);
+            }
+        }
+        return grid[0][0];
+    }
 
+    // 48. 最长不含重复字符的子字符串
+    public int lengthOfLongestSubstring(String s) {
+        int[] hset = new int[256];
+        int max_re = 0, p1 = 0, p2 = 0;
+        while (p2 < s.length()) {
+            if (hset[s.charAt(p2)] == 0) {
+                hset[s.charAt(p2)] = -1;
+            } else {
+                while (s.charAt(p1) != s.charAt(p2)) {
+                    hset[s.charAt(p1)] = 0;
+                    p1++;
+                }
+                p1++;
+            }
+            max_re = Math.max(max_re, p2-p1+1);
+            p2++;
+        }
+        return max_re;
+    }
+
+    // 49. 丑数
+    public int nthUglyNumber(int n) {
+        int[] dp = new int[n+1];
+        dp[1] = 1;
+        int p2 = 1, p3 = 1, p5 = 1;
+        for (int i = 2; i <= n; i++) {
+            while (dp[p2]*2 <= dp[i-1]) p2++;
+            while (dp[p3]*3 <= dp[i-1]) p3++;
+            while (dp[p5]*5 <= dp[i-1]) p5++;
+            dp[i] = Math.min(dp[p2]*2, Math.min(dp[p3]*3, dp[p5]*5));
+        }
+        return dp[n];
+    }
+
+    // 50. 第一个只出现一次的字符
+    public char firstUniqChar(String s) {
+        char[] chs = s.toCharArray();
+        int[] mark = new int[128];
+        int ind = 1;
+        for (char c : chs) {
+            if (mark[c] == 0)
+                mark[c] = ind++;
+            else
+                mark[c] = -1;
+        }
+
+        int min = Integer.MAX_VALUE;
+        char re = ' ';
+        for (int i = 0; i < 128; i++) {
+            if (mark[i] > 0 && mark[i] < min) {
+                min = mark[i];
+                re = (char)i;
+            }
+        }
+        return re;
+    }
+
+    // 51. 数组中的逆序对
+    public int reversePairs(int[] nums) {
+        if (nums.length < 2)
+            return 0;
+        return mergeSort(nums, 0, nums.length-1);
+    }
+
+    int mergeSort(int[] nums, int l, int r) {
+        if (l == r)
+            return 0;
+        int re = 0, mid = l+(r-l)/2;
+        re += mergeSort(nums, l, mid) + mergeSort(nums, mid+1, r);
+        int left = l, right = mid+1;
+        if (nums[mid] <= nums[right])
+            return re;
+
+        int k = 0;
+        int[] temp = new int[r-l+1];
+        while (left <= mid && right <= r) {
+            if (nums[left] <= nums[right]) {
+                re += right - mid - 1;
+                temp[k] = nums[left];
+                left++;
+            } else {
+                temp[k] = nums[right];
+                right++;
+            }
+            k++;
+        }
+        if (left > mid) {
+            while (right <= r) {
+                temp[k] = nums[right];
+                right++;
+                k++;
+            }
+        } else {
+            while (left <= mid) {
+                re += right - mid - 1;
+                temp[k] = nums[left];
+                left++;
+                k++;
+            }
+        }
+        int ind = l;
+        for (int num : temp)
+            nums[ind++] = num;
+        return re;
+    }
+
+    // 52. 两个链表的第一个公共节点
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode p1 = headA, p2 = headB;
+        while (p1 != p2) {
+            p1 = p1 == null ? headB : p1.next;
+            p2 = p2 == null ? headA : p2.next;
+        }
+        return p1;
+    }
+
+    // 53 - I. 在排序数组中查找数字 I
+    public int search(int[] nums, int target) {
+        int l = 0, h = nums.length-1;
+        while (l <= h) {
+            int mid = l + (h-l)/2;
+            if (target <= nums[mid])
+                h = mid-1;
+            else
+                l = mid+1;
+        }
+        h++;
+        int times = 0;
+        while (h < nums.length && nums[h] == target) {
+            times++;
+            h++;
+        }
+        return times;
+    }
+
+    public int search2(int[] nums, int target) {
+        int l = 0, h = nums.length-1;
+        while (l <= h) {
+            int mid = l + (h-l)/2;
+            if (target <= nums[mid])
+                h = mid-1;
+            else
+                l = mid+1;
+        }
+        int left = h;
+        if (h+1 >= nums.length || nums[h+1] != target)
+            return 0;
+        l = 0;
+        h = nums.length-1;
+        while (l <= h) {
+            int mid = l +(h-l)/2;
+            if (nums[mid] <= target)
+                l = mid+1;
+            else
+                h = mid-1;
+        }
+        return h-left;
+    }
+
+    // 53 - II. 0～n-1中缺失的数字
+    public int missingNumber(int[] nums) {
+        int l = 0, h = nums.length-1;
+        while (l <= h) {
+            int mid = l + (h-l)/2;
+            if (nums[mid] == mid)
+                l = mid+1;
+            else
+                h = mid-1;
+        }
+        return l;
     }
 }
