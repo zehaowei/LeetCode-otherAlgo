@@ -1,5 +1,6 @@
 package com.isswhu;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class LCOF {
@@ -1121,5 +1122,86 @@ public class LCOF {
             low = n % digit;
         }
         return sum;
+    }
+
+    // 44. 数字序列中某一位的数字
+    public int findNthDigit(int n) {
+        int digit = 1;
+        long count = 9L, start = 1;
+        while (count < n) {
+            n -= count;
+            digit++;
+            start *= 10;
+            count = start * 9 * digit;
+        }
+        int ind = n % digit;
+        int nums = n / digit;
+        int number = (int)start + nums - 1;
+        if (ind != 0) {
+            number++;
+            return Integer.toString(number).charAt(ind-1) - '0';
+        }
+        return number % 10;
+    }
+
+    // 45. 把数组排成最小的数
+    public String minNumber(int[] nums) {
+        if (nums.length == 0)
+            return "";
+        ArrayList<Integer> list = new ArrayList<>(nums.length);
+        for (int num : nums)
+            list.add(num);
+        list.sort((a, b) -> {
+            if (a.equals(b))
+                return 0;
+            String s1 = String.valueOf(a), s2 = String.valueOf(b);
+            int i = 0;
+            while (i < s1.length() && i < s2.length()) {
+                int a1 = s1.charAt(i) - '0', b1 = s2.charAt(i) - '0';
+                if (a1 < b1)
+                    return -1;
+                else if (a1 > b1)
+                    return 1;
+                i++;
+            }
+            String s3, s4;
+            if (i < s1.length()) {
+                s3 = s1.substring(i) + s1.substring(0, i);
+                s4 = s1;
+            } else {
+                s3 = s2;
+                s4 = s2.substring(i) + s2.substring(0, i);
+            }
+            return s3.compareTo(s4);
+        });
+        StringBuilder str = new StringBuilder();
+        for (int num : list) {
+            str.append(num);
+        }
+        return str.toString();
+    }
+
+    // 46. 把数字翻译成字符串
+    public int translateNum(int num) {
+        String s = String.valueOf(num);
+        int n = s.length();
+        if (n == 1)
+            return 1;
+        int i2 = 1, i1 = 1;
+
+        for (int i = n-2; i >= 0; i--) {
+            int tmp = i1, a = num % 100;
+            if (a >= 10 && a <= 25) {
+                i1 += i2;
+            }
+            i2 = tmp;
+            num /= 10;
+        }
+        return i1;
+    }
+
+    // 47. 礼物的最大价值
+    public int maxValue(int[][] grid) {
+
     }
 }
