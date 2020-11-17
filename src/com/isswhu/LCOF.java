@@ -1386,4 +1386,143 @@ public class LCOF {
         }
         return l;
     }
+
+    // 54. 二叉搜索树的第k大节点
+    int re;
+
+    public int kthLargest(TreeNode root, int k) {
+        midorder(root, k, 0);
+        return re;
+    }
+
+    int midorder(TreeNode root, int k, int times) {
+        if (root == null)
+            return times;
+        times = midorder(root.right, k, times);
+        if (k == times)
+            return times;
+        if (times + 1 == k) {
+            re = root.val;
+            return times+1;
+        }
+        times = midorder(root.left, k, times+1);
+        return times;
+    }
+
+    // 55 - I. 二叉树的深度
+    public int maxDepth(TreeNode root) {
+        if (root == null)
+            return 0;
+        return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
+    }
+
+    // 55 - II. 平衡二叉树
+    public boolean isBalanced(TreeNode root) {
+        return dfs55(root) != -1;
+    }
+
+    int dfs55(TreeNode root) {
+        if (root == null)
+            return 0;
+        int l = dfs55(root.left);
+        if (l == -1)
+            return -1;
+        int r = dfs55(root.right);
+        if (r == -1)
+            return -1;
+        if (Math.abs(l-r) > 1)
+            return -1;
+        return 1 + Math.max(l, r);
+    }
+
+    // 56 - I. 数组中数字出现的次数
+    public int[] singleNumbers(int[] nums) {
+        int mark = nums[0];
+        for (int i = 1; i < nums.length; i++)
+            mark = mark ^ nums[i];
+        int mask = 1;
+        while (mask != 0) {
+            if((mark & mask) != 0)
+                break;
+            mask = mask << 1;
+        }
+        int group0 = 0, group1 = 0;
+        boolean init0 = false, init1 = false;
+        for (int i = 0; i < nums.length; i++) {
+            if ((nums[i] & mask) != 0) {
+                if (init1) {
+                    group1 = group1 ^ nums[i];
+                } else {
+                    group1 = nums[i];
+                    init1 = true;
+                }
+            } else {
+                if (init0) {
+                    group0 = group0 ^ nums[i];
+                } else {
+                    group0 = nums[i];
+                    init0 = true;
+                }
+            }
+        }
+        return new int[]{group0, group1};
+    }
+
+    // 56 - II. 数组中数字出现的次数 II
+    public int singleNumber(int[] nums) {
+        int[] stat = new int[32];
+        for (int num : nums) {
+            for (int i = 0; i < 32; i++) {
+                stat[i] += (num & 1);
+                num = num >>> 1;
+            }
+        }
+
+        int re = 0, base = 1;
+        for (int i = 0; i < 32; i++) {
+            if(stat[i] % 3 == 1) {
+                re += base;
+            }
+            base *= 2;
+        }
+        return re;
+    }
+
+    // 57. 和为s的两个数字
+    public int[] twoSum(int[] nums, int target) {
+        int i = 0, j = nums.length-1;
+        while (i < j) {
+            if (nums[i]+nums[j] == target)
+                return new int[]{nums[i], nums[j]};
+            else if (nums[i]+nums[j] > target)
+                j--;
+            else
+                i++;
+        }
+        return new int[]{};
+    }
+
+    // 57 - II. 和为s的连续正数序列
+    public int[][] findContinuousSequence(int target) {
+        if (target == 1 || target == 2)
+            return new int[][]{};
+        int i = 1, j = 2;
+        ArrayList<int[]> re = new ArrayList<>();
+        while (i < j && j <= (target+1)/2) {
+            int sum = (i+j)*(j-i+1)/2;
+            if (sum < target) {
+                j++;
+            } else {
+                if (sum == target) {
+                    int[] list = new int[j-i+1];
+                    int ind = 0;
+                    for(int k = i; k <= j; k++)
+                        list[ind++] = k;
+                    re.add(list);
+                }
+                i++;
+            }
+        }
+        return re.toArray(new int[re.size()][]);
+    }
 }
