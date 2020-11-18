@@ -1525,4 +1525,124 @@ public class LCOF {
         }
         return re.toArray(new int[re.size()][]);
     }
+
+    // 58 - I. 翻转单词顺序
+    public String reverseWords(String s) {
+        String[] words = s.split(" ");
+        StringBuilder str = new StringBuilder();
+        for (int i = words.length-1; i >= 0; i--) {
+            if (!words[i].equals(""))
+                str.append(words[i]).append(" ");
+        }
+        if (str.length() == 0)
+            return "";
+        return str.substring(0, str.length()-1);
+    }
+
+    public String reverseWords2(String s) {
+        int p1 = s.length()-1, p2 = s.length()-1;
+        char[] chs = s.toCharArray();
+        StringBuilder str = new StringBuilder();
+        while (p2 >= 0) {
+            while (p1 >= 0 && chs[p1] == ' ')
+                p1--;
+            if (p1 == -1)
+                break;
+            p2 = p1;
+            while (p1 >= 0 && chs[p1] != ' ')
+                p1--;
+            str.append(s, p1+1, p2+1).append(' ');
+            p2 = p1;
+        }
+        if (str.length() == 0)
+            return "";
+        return str.substring(0, str.length()-1);
+    }
+
+    // 58 - II. 左旋转字符串
+    public String reverseLeftWords(String s, int n) {
+        StringBuilder str = new StringBuilder();
+        str.append(s, n, s.length()).append(s, 0, n);
+        return str.toString();
+    }
+
+    // 59 - I. 滑动窗口的最大值
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums.length == 0)
+            return new int[]{};
+        else if (nums.length == 1 || k == 1)
+            return nums;
+
+        Deque<Integer> deque = new LinkedList<>();
+        int[] re = new int[nums.length-k+1];
+        for (int j = 0; j < nums.length; j++) {
+            while (!deque.isEmpty() && nums[deque.getLast()] <= nums[j])
+                deque.removeLast();
+            deque.add(j);
+            int l = j - k + 1;
+            if (deque.getFirst() < l)
+                deque.removeFirst();
+            if (l >= 0)
+                re[l] = nums[deque.getFirst()];
+        }
+        return re;
+    }
+
+    // 59 - II. 队列的最大值
+    class MaxQueue {
+
+        Deque<Integer> deque;
+        Deque<Integer> helper;
+
+        public MaxQueue() {
+            deque = new LinkedList<>();
+            helper = new LinkedList<>();
+        }
+
+        public int max_value() {
+            if (!helper.isEmpty())
+                return helper.peek();
+            return -1;
+        }
+
+        public void push_back(int value) {
+            deque.add(value);
+            while(!helper.isEmpty() && helper.getLast() < value)
+                helper.removeLast();
+            helper.add(value);
+        }
+
+        public int pop_front() {
+            if (!deque.isEmpty()) {
+                int top = deque.poll();
+                if (top == helper.peek())
+                    helper.poll();
+                return top;
+            }
+            return -1;
+        }
+    }
+
+    // 61. 扑克牌中的顺子
+    public boolean isStraight(int[] nums) {
+        HashSet<Integer> hset = new HashSet<>();
+        int max = -1, min = 14;
+        for(int num : nums) {
+            if (num != 0) {
+                if (hset.contains(num))
+                    return false;
+                hset.add(num);
+                max = Math.max(max, num);
+                min = Math.min(min, num);
+            }
+        }
+        if (max-min < 5)
+            return true;
+        return false;
+    }
+
+    // 62. 圆圈中最后剩下的数字
+    public int lastRemaining(int n, int m) {
+
+    }
 }
