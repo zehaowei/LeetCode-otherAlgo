@@ -1643,6 +1643,219 @@ public class LCOF {
 
     // 62. 圆圈中最后剩下的数字
     public int lastRemaining(int n, int m) {
+        int re = 0;
+        for (int i = 2; i <= n; i++) {
+            re = (re + m) % n;
+        }
+        return re;
+    }
 
+    // 63. 股票的最大利润
+    public int maxProfit(int[] prices) {
+        int max = 0, buy = Integer.MAX_VALUE;
+        for (int price : prices) {
+            if (price > buy)
+                max = Math.max(max, price-buy);
+            else if (price < buy)
+                buy = price;
+        }
+        return max;
+    }
+
+    // 64. 求1+2+…+n
+    public int sumNums(int n) {
+        boolean re = n > 0 && (n = n + sumNums(n-1)) > 0;
+        return n;
+    }
+
+    //  65. 不用加减乘除做加法
+    public int add(int a, int b) {
+        while (b != 0) {
+            int tmp = a;
+            a = a ^ b;
+            b = (tmp & b) << 1;
+        }
+        return a;
+    }
+
+    // 66. 构建乘积数组
+    public int[] constructArr(int[] a) {
+        int n = a.length;
+        if (n == 0)
+            return new int[0];
+        int[] posi = new int[n], reverse = new int[n];
+        posi[0] = 1;
+        for (int i = 0; i < n-1; i++) {
+            posi[i+1] = posi[i] * a[i];
+        }
+        reverse[n-1] = 1;
+        for (int j = n-1; j > 0; j--) {
+            reverse[j-1] = reverse[j] * a[j];
+        }
+        int[] re = new int[n];
+        for (int k = 0; k < n; k++) {
+            re[k] = posi[k] * reverse[k];
+        }
+        return re;
+    }
+
+    // 67. 把字符串转换成整数
+    public int strToInt(String str) {
+        if (str.equals(""))
+            return 0;
+        char[] chs = str.toCharArray();
+        int p = 0;
+        boolean positive = true, hasPorN = false, hasZero = false;
+        while (p < chs.length) {
+            if (chs[p] == ' ') {
+                if (hasPorN || hasZero)
+                    return 0;
+                p++;
+            } else if (chs[p] == '0') {
+                hasZero = true;
+                p++;
+            } else if (chs[p] == '-') {
+                if (hasPorN || hasZero)
+                    return 0;
+                hasPorN = true;
+                positive = false;
+                p++;
+            } else if (chs[p] == '+') {
+                if (hasPorN || hasZero)
+                    return 0;
+                hasPorN = true;
+                p++;
+            } else if (chs[p] >= '1' && chs[p] <= '9') {
+                break;
+            } else {
+                return 0;
+            }
+        }
+        if (p == chs.length)
+            return 0;
+        int digits = 1;
+        long base = chs[p++] - '0';
+        while (p < chs.length && chs[p] >= '0' && chs[p] <= '9') {
+            base *= 10;
+            base += chs[p++] - '0';
+            digits++;
+            if (digits > 11)
+                break;
+        }
+        if (!positive)
+            base = -base;
+        if (base < Integer.MIN_VALUE)
+            return Integer.MIN_VALUE;
+        else if (base > Integer.MAX_VALUE)
+            return Integer.MAX_VALUE;
+        else
+            return (int)base;
+    }
+
+    // 68 - I. 二叉搜索树的最近公共祖先
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (p.val == root.val
+                || q.val == root.val
+                || p.val < root.val && q.val > root.val
+                || p.val > root.val && q.val < root.val)
+            return root;
+        else if (p.val < root.val)
+            return lowestCommonAncestor(root.left, p, q);
+        else
+            return lowestCommonAncestor(root.right, p, q);
+    }
+
+    // 68 - II. 二叉树的最近公共祖先
+    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        LinkedList<TreeNode> list1 = new LinkedList<>(), list2 = new LinkedList<>();
+        getPath(root, p, list1);
+        getPath(root, q, list2);
+        Iterator<TreeNode> it1 = list1.iterator(), it2 = list2.iterator();
+        TreeNode last = root;
+        while (it1.hasNext() && it2.hasNext()) {
+            TreeNode n1 = it1.next(), n2 = it2.next();
+            if (n1.val != n2.val)
+                return last;
+            last = n1;
+        }
+        return last;
+    }
+
+    boolean getPath(TreeNode root, TreeNode p, LinkedList<TreeNode> list) {
+        if (root == null)
+            return false;
+
+        list.add(root);
+        if (root == p || getPath(root.left, p, list) || getPath(root.right, p, list)) {
+            return true;
+        }
+
+        list.removeLast();
+        return false;
+    }
+
+    public TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null)
+            return null;
+        else if (root.val == p.val || root.val == q.val)
+            return root;
+        TreeNode re1 = lowestCommonAncestor(root.left, p, q), re2 = lowestCommonAncestor(root.right, p, q);
+        if (re1 != null && re2 != null)
+            return root;
+        else if (re1 != null)
+            return re1;
+        else
+            return re2;
+    }
+
+    // 面试题4. 二维数组中的查找
+    public boolean findNumberIn2DArray(int[][] matrix, int target) {
+        int n = matrix.length;
+        if (n == 0)
+            return false;
+        int m = matrix[0].length;
+        if (m == 0)
+            return false;
+
+        int i = n-1, j = 0;
+        while (i >= 0 && j <= m-1) {
+            if (target < matrix[i][j])
+                i--;
+            else if (target > matrix[i][j])
+                j++;
+            else
+                return true;
+        }
+        return false;
+    }
+
+    // 面试题60. n个骰子的点数
+    public double[] dicesProbability(int n) {
+        int[][] store = new int[n+1][6*n+1];
+        for(int i = 1; i <= n; i++) {
+            for (int j = 1; j <= 6*n; j++)
+                store[i][j] = -1;
+        }
+        double[] re = new double[5*n+1];
+        int ind = 0;
+        double base = Math.pow(6,n);
+        for (int i = n; i <= 6*n; i++) {
+            re[ind++] = (double)times(n, i, store) / base;
+        }
+        return re;
+    }
+
+    int times(int nums, int sum, int[][]store) {
+        if (nums == 1)
+            return sum <= 6 ? 1 : 0;
+        if (store[nums][sum] != -1)
+            return store[nums][sum];
+
+        int times = 0;
+        for (int i = 1; i <= 6 && i < sum; i++) {
+            times += times(nums-1, sum-i, store);
+        }
+        store[nums][sum] = times;
+        return times;
     }
 }

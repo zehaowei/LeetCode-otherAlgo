@@ -253,4 +253,49 @@ public class BinarySearch {
         else
             return re;
     }
+
+    //
+
+    // 240. 搜索二维矩阵 II
+    public boolean searchMatrix2(int[][] matrix, int target) {
+        int n = matrix.length;
+        if (n == 0)
+            return false;
+        int m = matrix[0].length;
+        if (m == 0)
+            return false;
+
+        int i = n-1, j = 0;
+        while (i >= 0 && j <= m-1) {
+            if (target < matrix[i][j]) {
+                int l = 0, h = i-1;
+                while (l <= h) {
+                    int mid = l + (h-l)/2;
+                    if (matrix[mid][j] < target)
+                        l = mid+1;
+                    else if (matrix[mid][j] > target)
+                        h = mid-1;
+                    else
+                        return true;
+                }
+                i = h;
+            }
+            else if (target > matrix[i][j]) {
+                int l = j, h = m-1;
+                while (l <= h) {
+                    int mid = l + (h-l)/2;
+                    if (matrix[i][mid] < target)
+                        l = mid+1;
+                    else if (matrix[i][mid] > target)
+                        h = mid-1;
+                    else
+                        return true;
+                }
+                j = h+1;
+            }
+            else
+                return true;
+        }
+        return false;
+    }
 }
