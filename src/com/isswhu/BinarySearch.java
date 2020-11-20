@@ -254,7 +254,75 @@ public class BinarySearch {
             return re;
     }
 
-    //
+    // 222. 完全二叉树的节点个数
+    static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode() {}
+        TreeNode(int x) { val = x; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    public int countNodes(TreeNode root) {
+        if (root == null)
+            return 0;
+        int depth = getDepth(root);
+        return getNodes(root, depth);
+    }
+
+    int getNodes(TreeNode root, int depth) {
+        if (root == null)
+            return 0;
+        else if (depth == 1)
+            return 1;
+        else if (root.right == null) // root.right == null -> depth = 2
+            return root.left == null ? 1 : 2;
+        else if (depth == 2)
+            return 3;
+        TreeNode right = root.right, left = right.left; // when depth == 3, left could be null, depth > 3, left must be non-null
+        boolean exist = true;
+        for (int i = 0; i < depth-3; i++) {
+            left = left.left;
+        }
+        if (left == null)
+            exist = false;
+
+        if (exist) {
+            return (int)Math.pow(2, depth-1) + getNodes(right, depth-1);
+        } else {
+            return getNodes(root.left, depth-1) + (int)Math.pow(2, depth-2);
+        }
+    }
+
+    int getDepth(TreeNode root) {
+        if (root == null)
+            return 0;
+        return 1+getDepth(root.left);
+    }
+
+    // 230. 二叉搜索树中第K小的元素
+    int count;
+    int ans;
+
+    public int kthSmallest(TreeNode root, int k) {
+        inorder(root, k);
+        return ans;
+    }
+
+    void inorder(TreeNode root, int k) {
+        if (root == null || count == k)
+            return;
+        inorder(root.left, k);
+        if (count == k - 1)
+            ans = root.val;
+        count++;
+        inorder(root.right, k);
+    }
 
     // 240. 搜索二维矩阵 II
     public boolean searchMatrix2(int[][] matrix, int target) {
@@ -297,5 +365,10 @@ public class BinarySearch {
                 return true;
         }
         return false;
+    }
+
+    // 275. H 指数 II
+    public int hIndex(int[] citations) {
+
     }
 }

@@ -7,46 +7,41 @@ public class Main {
     public static void main(String[] args) {
         //int[] arr = new int[]{0,1,1,1,4,5,3,7,7,8,10,2,7,8,0,5,2,16,12,1,19,15,5,18,2,2,22,15,8,22,17,6,22,6,22,26,32,8,10,11,2,26,9,12,9,7,28,33,20,7,2,17,44,3,52,27,2,23,19,56,56,58,36,31,1,19,19,6,65,49,27,63,29,1,69,47,56,61,40,43,10,71,60,66,42,44,10,12,83,69,73,2,65,93,92,47,35,39,13,75};
         Test t = new Test();
-        LCOF.TreeNode root = new LCOF.TreeNode(6);
-        LCOF.TreeNode root2 = new LCOF.TreeNode(2);
-        LCOF.TreeNode root0 = new LCOF.TreeNode(0);
-        LCOF.TreeNode root4 = new LCOF.TreeNode(4);
-        root.left = root2;
-        root2.left = root0;
-        root2.right = root4;
-        t.lowestCommonAncestor(root, root2, root4);
-
+        BinarySearch.TreeNode root = new BinarySearch.TreeNode(3);
+        BinarySearch.TreeNode root1 = new BinarySearch.TreeNode(1);
+        BinarySearch.TreeNode root2 = new BinarySearch.TreeNode(4);
+        BinarySearch.TreeNode root3 = new BinarySearch.TreeNode(2);
+        root.left = root1;
+        root.right = root2;
+        root1.right = root3;
+        t.kthSmallest(root, 3);
     }
 
 
 }
 
 class Test {
-    public LCOF.TreeNode lowestCommonAncestor(LCOF.TreeNode root, LCOF.TreeNode p, LCOF.TreeNode q) {
-        LinkedList<LCOF.TreeNode> list1 = new LinkedList<>(), list2 = new LinkedList<>();
-        getPath(root, p, list1);
-        getPath(root, q, list2);
-        Iterator<LCOF.TreeNode> it1 = list1.iterator(), it2 = list2.iterator();
-        LCOF.TreeNode last = root;
-        while (it1.hasNext() && it2.hasNext()) {
-            LCOF.TreeNode n1 = it1.next(), n2 = it2.next();
-            if (n1.val != n2.val)
-                return last;
-            last = n1;
-        }
-        return last;
+    int ans;
+
+    public int kthSmallest(BinarySearch.TreeNode root, int k) {
+        inorder(root, 0, k);
+        return ans;
     }
 
-    boolean getPath(LCOF.TreeNode root, LCOF.TreeNode p, LinkedList<LCOF.TreeNode> list) {
+    int inorder(BinarySearch.TreeNode root, int no, int k) {
         if (root == null)
-            return false;
-
-        list.add(p);
-        if (root == p || getPath(root.left, p, list) || getPath(root.right, p, list)) {
-            return true;
+            return 0;
+        int num = inorder(root.left, no, k);
+        if (num == -1)
+            return -1;
+        else if (no+num+1 == k) {
+            ans = root.val;
+            return -1;
         }
-
-        list.removeLast();
-        return false;
+        no += num + 1;
+        num = inorder(root.right, no, k);
+        if (num == -1)
+            return -1;
+        return no+num;
     }
 }
