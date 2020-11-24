@@ -199,4 +199,33 @@ public class BinaryTree {
         }
         return level;
     }
+
+    // 112. 路径总和
+    public boolean hasPathSum(TreeNode root, int sum) {
+        return dfs(root, 0, sum);
+    }
+
+    boolean dfs(TreeNode root, int sum, int target) {
+        if (root == null)
+            return false;
+        else if (root.left == null && root.right == null)
+            return sum+root.val == target;
+
+        sum += root.val;
+        return dfs(root.left, sum, target) || dfs(root.right, sum, target);
+    }
+
+    // 114. 二叉树展开为链表
+    TreeNode end = null;
+    public void flatten(TreeNode root) {
+        if (root == null)
+            return;
+        flatten(root.right);
+        flatten(root.left);
+        root.right = end;
+        root.left = null;
+        end = root;
+    }
+
+    //
 }
