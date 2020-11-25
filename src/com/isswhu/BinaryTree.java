@@ -227,5 +227,102 @@ public class BinaryTree {
         end = root;
     }
 
+    // 116. 填充每个节点的下一个右侧节点指针
+    class Node {
+        public int val;
+        public Node left;
+        public Node right;
+        public Node next;
+
+        public Node() {}
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, Node _left, Node _right, Node _next) {
+            val = _val;
+            left = _left;
+            right = _right;
+            next = _next;
+        }
+    };
+
+    public Node connect(Node root) {
+        if (root == null)
+            return null;
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            Node pre = null;
+            for (int i = 0; i < size; i++) {
+                Node node = queue.poll();
+                if (pre != null)
+                    pre.next = node;
+                pre = node;
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
+            }
+        }
+        return root;
+    }
+
+    public Node connect2(Node root) {
+        if (root == null)
+            return null;
+        Node pre = root;
+        while (pre.left != null) {
+            Node head = pre;
+            while (pre != null) {
+                pre.left.next = pre.right;
+                if (pre.next != null)
+                    pre.right.next = pre.next.left;
+                pre = pre.next;
+            }
+            pre = head.left;
+        }
+        return root;
+    }
+
+    // 117. 填充每个节点的下一个右侧节点指针 II
+    public Node connect3(Node root) {
+        if (root == null)
+            return null;
+        Node pre = root;
+        while (pre != null) {
+            while (pre != null && pre.left == null && pre.right == null)
+                pre = pre.next;
+            if (pre == null) break;
+
+            Node tmp = pre;
+            while (tmp != null) {
+                Node cur;
+                if (tmp.left != null && tmp.right != null) {
+                    tmp.left.next = tmp.right;
+                    cur = tmp.right;
+                } else if (tmp.left != null)
+                    cur = tmp.left;
+                else
+                    cur = tmp.right;
+
+                tmp = tmp.next;
+                while (tmp != null && tmp.left == null && tmp.right == null)
+                    tmp = tmp.next;
+                if (tmp != null) {
+                    if (tmp.left != null)
+                        cur.next = tmp.left;
+                    else
+                        cur.next = tmp.right;
+                }
+            }
+            if (pre.left != null)
+                pre = pre.left;
+            else
+                pre = pre.right;
+        }
+        return root;
+    }
+
     //
 }
