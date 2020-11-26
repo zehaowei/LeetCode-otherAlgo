@@ -324,5 +324,152 @@ public class BinaryTree {
         return root;
     }
 
-    //
+    // 124. 二叉树中的最大路径和
+    int re = Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        getMax(root);
+        return re;
+    }
+
+    int getMax(TreeNode root) {
+        if (root == null)
+            return 0;
+        int left = getMax(root.left);
+        int right = getMax(root.right);
+        int num = Math.max(root.val, root.val+Math.max(left, right));
+        int mid = Math.max(num, left+root.val+right);
+        re = Math.max(mid, re);
+
+        return num;
+    }
+
+    // 129. 求根到叶子节点数字之和
+    int result = 0;
+    public int sumNumbers(TreeNode root) {
+        dfs129(root, 0);
+        return result;
+    }
+
+    void dfs129(TreeNode root, int sum) {
+        if (root == null)
+            return;
+        else if (root.left == null & root.right == null) {
+            result += sum*10 + root.val;
+            return;
+        }
+
+        dfs129(root.left, sum*10 + root.val);
+        dfs129(root.right, sum*10 + root.val);
+    }
+
+    // 144. 二叉树的前序遍历
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> l = new LinkedList<>();
+        if (root == null)
+            return l;
+
+        Stack<TreeNode> stk = new Stack<>();
+        while (!stk.empty() || root != null) {
+            while (root != null) {
+                l.add(root.val);
+                stk.add(root);
+                root = root.left;
+            }
+            root = stk.pop().right;
+        }
+        return l;
+    }
+
+    // 145. 二叉树的后序遍历
+    public List<Integer> postorderTraversal(TreeNode root) {
+        LinkedList<Integer> l = new LinkedList<>();
+        if (root == null)
+            return l;
+
+        Stack<TreeNode> stk = new Stack<>();
+        while (!stk.empty() || root != null) {
+            while (root != null) {
+                l.addFirst(root.val);
+                stk.add(root);
+                root = root.right;
+            }
+            root = stk.pop();
+            root = root.left;
+        }
+        return l;
+    }
+
+    // 173. 二叉搜索树迭代器
+    class BSTIterator {
+        Stack<TreeNode> stk;
+        TreeNode node;
+        public BSTIterator(TreeNode root) {
+            stk = new Stack<>();
+            node = root;
+        }
+
+        /** @return the next smallest number */
+        public int next() {
+            while (node != null) {
+                stk.add(node);
+                node = node.left;
+            }
+            node = stk.pop();
+            int re = node.val;
+            node = node.right;
+            return re;
+        }
+
+        /** @return whether we have a next smallest number */
+        public boolean hasNext() {
+            return !stk.isEmpty() || node != null;
+        }
+    }
+
+    // 199. 二叉树的右视图
+    public List<Integer> rightSideView(TreeNode root) {
+        LinkedList<Integer> l = new LinkedList<>();
+        if (root == null)
+            return l;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            TreeNode node = null;
+            for (int i = 0; i < size; i++) {
+                node = queue.poll();
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
+            }
+            l.add(node.val);
+        }
+        return l;
+    }
+
+    // 257. 二叉树的所有路径
+    public List<String> binaryTreePaths(TreeNode root) {
+        StringBuilder str = new StringBuilder();
+        List<String> re = new LinkedList<>();
+        dfs257(root, str, re);
+        return re;
+    }
+
+    void dfs257(TreeNode root, StringBuilder str, List<String> re) {
+        if (root == null)
+            return;
+        else if (root.left == null && root.right == null) {
+            int start = str.length();
+            String s = Integer.toString(root.val);
+            str.append(s);
+            re.add(str.toString());
+            str.delete(start, start+s.length());
+        }
+
+        int start = str.length();
+        String s = root.val + "->";
+        str.append(s);
+        dfs257(root.left, str, re);
+        dfs257(root.right, str, re);
+        str.delete(start, start+s.length());
+    }
 }
