@@ -6,9 +6,9 @@ import java.util.*;
 public class Sort {
 
     // 57. 插入区间
-    public int[][] insert(int[][] intervals, int[] newInterval) {
-
-    }
+//    public int[][] insert(int[][] intervals, int[] newInterval) {
+//
+//    }
 
     // 147. 对链表进行插入排序
     public class ListNode {
@@ -224,5 +224,42 @@ public class Sort {
             return num / step;
         else
             return (num+1) / step - 1;
+    }
+
+    // 242. 有效的字母异位词
+    public boolean isAnagram(String s, String t) {
+        char[] chars1 = s.toCharArray();
+        char[] chars2 = t.toCharArray();
+        int[] map1 = new int[256];
+        int[] map2 = new int[256];
+        for (char c : chars1)
+            map1[c] += 1;
+        for (char c : chars2)
+            map2[c] += 1;
+        for (int i = 'a'; i <= 'z'; i++) {
+            if (map1[i] != map2[i])
+                return false;
+        }
+        return true;
+    }
+
+    // 274. H 指数
+    public int hIndex(int[] citations) {
+        if (citations.length == 0)
+            return 0;
+        Arrays.sort(citations);
+        int l = 0, h = citations.length-1;
+        while (l < h) {
+            int mid = l + (h-l)/2;
+            int nums = citations.length - mid;
+            if (citations[mid] == nums)
+                return nums;
+            else if (citations[mid] < nums) {
+                l = mid + 1;
+            } else {
+                h = mid;
+            }
+        }
+        return Math.min(citations[h], citations.length-h);
     }
 }
