@@ -6,9 +6,71 @@ import java.util.*;
 public class Sort {
 
     // 57. 插入区间
-//    public int[][] insert(int[][] intervals, int[] newInterval) {
-//
-//    }
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        if (newInterval.length == 0)
+            return intervals;
+        else if (intervals.length == 0)
+            return new int[][]{newInterval};
+        int start = newInterval[0], end = newInterval[1];
+        int l = 0, h = intervals.length-1;
+        while (l <= h) {
+            int mid = l + (h-l)/2;
+            if (intervals[mid][0] == start)
+                break;
+            else if (intervals[mid][0] > start)
+                h = mid-1;
+            else
+                l = mid+1;
+        }
+        int pos1;
+        if (l <= h)
+            pos1 = l + (h-l)/2;
+        else
+            pos1 = h;
+
+        l = 0; h = intervals.length-1;
+        while (l <= h) {
+            int mid = l + (h-l)/2;
+            if (intervals[mid][1] == end)
+                break;
+            else if (intervals[mid][1] > end)
+                h = mid-1;
+            else
+                l = mid+1;
+        }
+        int pos2;
+        if (l <= h)
+            pos2 = l + (h-l)/2;
+        else
+            pos2 = l;
+
+        int newS = start, newE = end, ind1 = pos1+1, ind2 = pos2-1;
+        if (pos1 >= 0 && start <= intervals[pos1][1]) {
+            ind1 = pos1;
+            newS = intervals[pos1][0];
+        }
+        if (pos2 < intervals.length && end >= intervals[pos2][0]) {
+            ind2 = pos2;
+            newE = intervals[pos2][1];
+        }
+
+        int[] newItv = new int[]{newS, newE};
+        LinkedList<int[]> list = new LinkedList<>();
+        boolean add = false;
+        for(int i = 0; i <= intervals.length; i++) {
+            if (i >= ind1) {
+                if (!add) {
+                    list.add(newItv);
+                    add = true;
+                }
+                if (i <= ind2)
+                    continue;
+            }
+            if (i != intervals.length)
+                list.add(intervals[i]);
+        }
+        return list.toArray(new int[list.size()][]);
+    }
 
     // 147. 对链表进行插入排序
     public class ListNode {
@@ -151,6 +213,90 @@ public class Sort {
         return dummy.next;
     }
 
+    // 164. 最大间距
+    public int maximumGap(int[] nums) {
+        if (nums.length < 2)
+            return 0;
+        int maxnum = 0;
+        for (int num : nums)
+            maxnum = Math.max(num, maxnum);
+        int times = 0;
+        while (maxnum != 0) {
+            times++;
+            maxnum /= 10;
+        }
+
+        int base = 1;
+        for (int i = 0; i < times; i++) {
+            int[] cnt = new int[10];
+            for (int num : nums) {
+                int ind = (num / base) % 10;
+                cnt[ind] += 1;
+            }
+
+            for (int j = 1; j < 10; j++)
+                cnt[j] += cnt[j-1];
+
+            int[] tmp = new int[nums.length];
+            for (int j = nums.length-1; j >= 0; j--) {
+                int ind = (nums[j] / base) % 10;
+                tmp[cnt[ind]-1] = nums[j];
+                cnt[ind] -= 1;
+            }
+
+            System.arraycopy(tmp, 0, nums, 0, nums.length);
+            base *= 10;
+        }
+
+        int maxGap = 0;
+        for (int i = 1; i < nums.length; i++) {
+            maxGap = Math.max(maxGap, nums[i]-nums[i-1]);
+        }
+        return maxGap;
+    }
+
+    public int maximumGap2(int[] nums) {
+        if (nums.length < 2)
+            return 0;
+
+        int minnum = Integer.MAX_VALUE, maxnum = 0;
+        for (int num : nums) {
+            minnum = Math.min(minnum, num);
+            maxnum = Math.max(maxnum, num);
+        }
+
+        int d = (int)Math.ceil((double)(maxnum - minnum) / (nums.length-1));
+        if (d == 0) return 0;
+        int size = (maxnum-minnum)/d + 1;
+        int[] maxs = new int[size], mins = new int[size];
+        for (int i = 0; i < mins.length; i++) {
+            maxs[i] = -1;
+            mins[i] = -1;
+        }
+
+        for (int num : nums) {
+            int ind = (num-minnum) / d;
+            if (maxs[ind] == -1) {
+                maxs[ind] = num;
+                mins[ind] = num;
+            } else {
+                maxs[ind] = Math.max(maxs[ind], num);
+                mins[ind] = Math.min(maxs[ind], num);
+            }
+        }
+
+        int re = 0, pre = 0;
+        for (int i = 1; i < maxs.length; i++) {
+            if (maxs[i] == -1)
+                continue;
+            if (maxs[pre] != -1) {
+                re = Math.max(mins[i] - maxs[pre], re);
+            }
+            pre = i;
+        }
+        return re;
+    }
+
     // 179. 最大数
     public String largestNumber(int[] nums) {
         if (nums.length == 0)
@@ -244,7 +390,7 @@ public class Sort {
     }
 
     // 274. H 指数
-    public int hIndex(int[] citations) {
+    public int hIndex2(int[] citations) {
         if (citations.length == 0)
             return 0;
         Arrays.sort(citations);
@@ -261,5 +407,24 @@ public class Sort {
             }
         }
         return Math.min(citations[h], citations.length-h);
+    }
+
+    public int hIndex(int[] citations) {
+        int n = citations.length;
+        int[] map = new int[n+1];
+        for (int cit : citations) {
+            if (cit > n)
+                map[n] += 1;
+            else
+                map[cit] += 1;
+        }
+
+        int nums = n, re = 0;
+        for (int i = 0; i <= n; i++) {
+            if (nums >= i)
+                re = i;
+            nums -= map[i];
+        }
+        return re;
     }
 }
