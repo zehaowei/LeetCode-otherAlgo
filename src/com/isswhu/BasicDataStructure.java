@@ -1,8 +1,81 @@
 package com.isswhu;
 
-import java.util.Stack;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class BasicDataStructure {
+    // 15. 三数之和
+    public List<List<Integer>> threeSum(int[] nums) {
+        LinkedList<List<Integer>> re = new LinkedList<>();
+        if (nums.length < 3)
+            return re;
+        Arrays.sort(nums);
+        for (int p1 = 0; p1 <= nums.length-3; p1++) {
+            if (nums[p1] > 0)
+                break;
+            if (p1-1 >= 0 && nums[p1-1] == nums[p1])
+                continue;
+            int target = -nums[p1];
+            int l = p1+1, r = nums.length-1;
+            while (l < r) {
+                if (nums[l] + nums[r] == target) {
+                    LinkedList<Integer> lst = new LinkedList<>();
+                    lst.add(nums[p1]);
+                    lst.add(nums[l]);
+                    lst.add(nums[r]);
+                    re.add(lst);
+                    l++;
+                    r--;
+                } else if (nums[l] + nums[r] > target) {
+                    r--;
+                } else {
+                    l++;
+                }
+
+                while (l > p1 + 1 && l < r && nums[l] == nums[l - 1])
+                    l++;
+                while (r < nums.length - 1 && l < r && nums[r] == nums[r + 1])
+                    r--;
+            }
+        }
+        return re;
+    }
+
+    // 18. 四数之和
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        LinkedList<List<Integer>> re = new LinkedList<>();
+        if (nums.length < 4)
+            return re;
+        Arrays.sort(nums);
+        for (int i = 0; i <= nums.length-4; i++) {
+            if (i > 0 && nums[i] == nums[i-1])
+                continue;
+            if (target - nums[i] < 3*nums[i])
+                break;
+            int target2 = target-nums[i];
+            for (int j = i+1; j <= nums.length-3; j++) {
+                if (j > i+1 && nums[j] == nums[j-1])
+                    continue;
+                if (target2-nums[j] < 2*nums[j])
+                    break;
+                int target3 = target2-nums[j], l = j+1, r = nums.length-1;
+                while (l < r) {
+                    if (nums[l] + nums[r] == target3) {
+                        re.add(Arrays.asList(nums[i], nums[j], nums[l], nums[r]));
+                        while (l < r && nums[l+1] == nums[l]) l++;
+                        while (l < r && nums[r-1] == nums[r]) r--;
+                        l++; r--;
+                    } else if (nums[l] + nums[r] > target3) {
+                        r--;
+                    } else {
+                        l++;
+                    }
+                }
+            }
+        }
+        return re;
+    }
+
     // 48 Rotate Image
     public void rotate(int[][] matrix) {
         int n = matrix.length;
