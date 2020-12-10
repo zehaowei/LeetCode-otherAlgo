@@ -350,4 +350,60 @@ public class HashTable {
         }
         return false;
     }
+
+    // 219. 存在重复元素 II
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        int i = 0, j = 0;
+        HashSet<Integer> hset = new HashSet<>();
+        while (j < nums.length) {
+            if (hset.contains(nums[j]))
+                return true;
+            hset.add(nums[j]);
+            if (j - i == k) {
+                hset.remove(nums[i++]);
+            }
+            j++;
+        }
+        return false;
+    }
+
+    // 290. 单词规律
+    public boolean wordPattern(String pattern, String s) {
+        HashMap<Character, String> hmap1 = new HashMap<>();
+        HashMap<String, Character> hmap2 = new HashMap<>();
+        char[] chs = pattern.toCharArray();
+        String[] strs = s.split(" ");
+        if (chs.length != strs.length)
+            return false;
+        for (int i = 0; i < chs.length; i++) {
+            if (!hmap1.containsKey(chs[i]) && !hmap2.containsKey(strs[i])) {
+                hmap1.put(chs[i], strs[i]);
+                hmap2.put(strs[i], chs[i]);
+            } else if (hmap1.containsKey(chs[i]) && !hmap1.get(chs[i]).equals(strs[i])
+                    || hmap2.containsKey(strs[i]) && hmap2.get(strs[i]) != chs[i])
+                return false;
+        }
+        return true;
+    }
+
+    // 299. 猜数字游戏
+    public String getHint(String secret, String guess) {
+        int[] map = new int[128];
+        char[] sec = secret.toCharArray();
+        char[] gue = guess.toCharArray();
+        int a = 0, b = 0;
+        for (int i = 0; i < gue.length; i++) {
+            if (sec[i] == gue[i])
+                a++;
+            else
+                map[sec[i]] += 1;
+        }
+        for (int i = 0; i < gue.length; i++) {
+            if (sec[i] != gue[i] && map[gue[i]] > 0) {
+                b++;
+                map[gue[i]] -= 1;
+            }
+        }
+        return a+"A"+b+"B";
+    }
 }
