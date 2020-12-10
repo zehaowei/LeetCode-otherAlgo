@@ -262,6 +262,92 @@ public class HashTable {
 
     // 187. 重复的DNA序列
     public List<String> findRepeatedDnaSequences(String s) {
+        LinkedList<String> re = new LinkedList<>();
+        if (s.length() <= 10)
+            return re;
+        HashMap<String, Integer> hmap = new HashMap<>();
+        for (int i = 0; i <= s.length()-10; i++) {
+            String subs = s.substring(i, i+10);
+            if (hmap.containsKey(subs)) {
+                hmap.put(subs, hmap.get(subs)+1);
+            } else {
+                hmap.put(subs, 1);
+            }
+        }
+        for (Map.Entry<String, Integer> entry : hmap.entrySet()) {
+            if (entry.getValue() > 1)
+                re.add(entry.getKey());
+        }
+        return re;
+    }
 
+    // 202. 快乐数
+    public boolean isHappy(int n) {
+        int num = n;
+        HashSet<Integer> hset = new HashSet<>();
+        while (num != 1) {
+            int tmp = num, sum = 0;
+            while (tmp != 0) {
+                int a = tmp % 10;
+                sum += a*a;
+                tmp /= 10;
+            }
+            if (hset.contains(sum))
+                return false;
+            else
+                hset.add(sum);
+            num = sum;
+        }
+        return true;
+    }
+
+    // 204. 计数质数
+    public int countPrimes(int n) {
+        if (n <= 2)
+            return 0;
+        boolean[] arr = new boolean[n];
+        int m = (int)Math.sqrt(n);
+        for (int i = 2; i <= m; i++) {
+            if (!arr[i]) {
+                int j = i;
+                while (j*i < n) {
+                    arr[j*i] = true;
+                    j++;
+                }
+            }
+        }
+        int re = 0;
+        for (int i = 2; i < n; i++) {
+            if (!arr[i])
+                re++;
+        }
+        return re;
+    }
+
+    // 205. 同构字符串
+    public boolean isIsomorphic(String s, String t) {
+        int[] hmap = new int[128], hmap2 = new int[128];
+        char[] ss = s.toCharArray(), tt = t.toCharArray();
+        for (int i = 0; i < s.length(); i++) {
+            if (hmap[ss[i]] == 0 && hmap2[tt[i]] == 0) {
+                hmap[ss[i]] = tt[i];
+                hmap2[tt[i]] = ss[i];
+            } else if (hmap[ss[i]] != 0 && hmap[ss[i]] != tt[i]
+                        || hmap2[tt[i]] != 0 && hmap2[tt[i]] != ss[i]) {
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    // 217. 存在重复元素
+    public boolean containsDuplicate(int[] nums) {
+        HashSet<Integer> hset = new HashSet<>();
+        for (int num : nums) {
+            if (hset.contains(num))
+                return true;
+            hset.add(num);
+        }
+        return false;
     }
 }
