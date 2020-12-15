@@ -1,6 +1,8 @@
 package com.isswhu;
 
+import javax.management.remote.rmi._RMIConnection_Stub;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class TwoPointer {
 
@@ -72,6 +74,86 @@ public class TwoPointer {
 
     // 80. 删除排序数组中的重复项 II
     public int removeDuplicates(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        int i = -1, j = 1, times = 1;
+        while (j < nums.length) {
+            if (nums[j] != nums[j-1]) {
+                times = 1;
+            } else
+                times++;
 
+            if (times > 2 && i == -1) {
+                i = j;
+            } else if (times <= 2 && i != -1) {
+                nums[i++] = nums[j];
+            }
+            j++;
+        }
+        return i == -1 ? nums.length : i;
+    }
+
+    // 86. 分隔链表
+    public ListNode partition(ListNode head, int x) {
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode pre = dummy, cur = head;
+        while (cur != null && cur.val < x) {
+            pre = cur;
+            cur = cur.next;
+        }
+        ListNode cut = cur, cutPre = pre;
+        while (cur != null) {
+            if (cur.val < x) {
+                cutPre.next = cur;
+                cutPre = cur;
+                pre.next = cur.next;
+                cur.next = cut;
+                cur = pre.next;
+            } else {
+                pre = cur;
+                cur = cur.next;
+            }
+        }
+        return dummy.next;
+    }
+
+    // 125. 验证回文串
+    public boolean isPalindrome(String s) {
+        char[] chs = s.toCharArray();
+        int i = 0, j = s.length()-1;
+        while (i < j) {
+            while (!Character.isLetterOrDigit(chs[i]) && i < j)
+                i++;
+            while (!Character.isLetterOrDigit(chs[j]) && i < j)
+                j--;
+            if (i >= j)
+                return true;
+            if (Character.toLowerCase(chs[i]) == Character.toLowerCase(chs[j])) {
+                i++; j--;
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    // 142. 环形链表 II
+    public ListNode detectCycle(ListNode head) {
+        ListNode fast = head, slow = head;
+        while (true) {
+            if (fast == null || fast.next == null)
+                return null;
+            fast = fast.next.next;
+            slow = slow.next;
+            if (slow == fast)
+                break;
+        }
+        ListNode p1 = head, p2 = fast;
+        while (p1 != p2) {
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+        return p1;
     }
 }
