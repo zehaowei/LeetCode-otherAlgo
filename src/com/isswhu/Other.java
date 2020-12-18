@@ -118,4 +118,111 @@ public class Other {
             cur.next = l1;
         return dummy.next;
     }
+
+    // 24. 两两交换链表中的节点
+    public ListNode swapPairs(ListNode head) {
+        if (head == null)
+            return null;
+        ListNode dummy = new ListNode(-1, head);
+        ListNode pre = dummy, p1 = head, p2 = head.next;
+        while (p1 != null && p2 != null) {
+            p1.next = p2.next;
+            p2.next = p1;
+            pre.next = p2;
+
+            pre = p1;
+            p1 = p1.next;
+            if (p1 != null)
+                p2 = p1.next;
+        }
+        return dummy.next;
+    }
+
+    // 25. K 个一组翻转链表
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (k == 1)
+            return head;
+        ListNode dummy = new ListNode(-1, head);
+        ListNode p = head, pre = dummy;
+        int num = 0;
+        while (p != null) {
+            num++;
+            if (num == k) {
+                ListNode start = pre.next, nextStart = p.next;
+                pre.next = reverse(start, p);
+                pre = start;
+                pre.next = nextStart;
+                p = nextStart;
+                num = 0;
+            } else
+                p = p.next;
+        }
+        return dummy.next;
+    }
+
+    ListNode reverse(ListNode head, ListNode tail) {
+        ListNode headnew = null, p = head, tailNext = tail.next;;
+        while (p != tailNext) {
+            ListNode tmp = p.next;
+            p.next = headnew;
+            headnew = p;
+            p = tmp;
+        }
+        return headnew;
+    }
+
+    // 31. 下一个排列
+    public void nextPermutation(int[] nums) {
+        int len = nums.length, candi = -1;
+        for (int i = len-2; i >= 0; i--) {
+            if (nums[i] < nums[i+1]) {
+                candi = i;
+                break;
+            }
+        }
+        if (candi != -1) {
+            int cur = candi+1;
+            while (cur < len) {
+                if (nums[cur] > nums[candi]) {
+                    cur++;
+                } else {
+                    break;
+                }
+            }
+            cur--;
+            int tmp = nums[cur];
+            nums[cur] = nums[candi];
+            nums[candi] = tmp;
+        }
+        int l = candi+1, h = len-1;
+        while (l < h) {
+            int tmp = nums[h];
+            nums[h] = nums[l];
+            nums[l] = tmp;
+            l++;
+            h--;
+        }
+    }
+
+    // 38. 外观数列
+    public String countAndSay(int n) {
+        if (n == 1)
+            return "1";
+        String s = countAndSay(n-1);
+        char[] chs = s.toCharArray();
+        StringBuilder re = new StringBuilder();
+        int cur = 0, times = 1;
+        while (cur < chs.length) {
+            if (cur < chs.length-1 && chs[cur] == chs[cur+1]) {
+                times++;
+            } else {
+                re.append(times).append(chs[cur]);
+                times = 1;
+            }
+            cur++;
+        }
+        return re.toString();
+    }
+
+    //
 }

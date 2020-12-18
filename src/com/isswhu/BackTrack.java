@@ -1,10 +1,39 @@
 package com.isswhu;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class BackTrack {
+    // 40. 组合总和 II
+    ArrayList<List<Integer>> re;
+    ArrayList<Integer> tmp;
+
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        re = new ArrayList<>();
+        tmp = new ArrayList<>();
+        Arrays.sort(candidates);
+        btrack(candidates, 0, target);
+        return re;
+    }
+
+    void btrack(int[] nums, int s, int target) {
+        if (target == 0) {
+            re.add(new ArrayList<>(tmp));
+            return;
+        }
+        for (int i = s; i < nums.length; i++) {
+            if (nums[i] > target)
+                break;
+            if ((i > s && nums[i] == nums[i-1]))
+                continue;
+            tmp.add(nums[i]);
+            btrack(nums, i+1, target-nums[i]);
+            tmp.remove(tmp.size()-1);
+        }
+    }
+
     // 131 Palindrome Partitioning
     public static List<List<String>> partition(String s) {
         if (s.length() == 0)

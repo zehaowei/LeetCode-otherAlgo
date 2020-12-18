@@ -9,7 +9,8 @@ public class Main {
         int[] arr = new int[]{15252,16764,27963,7817,26155,20757,3478,22602,20404,6739,16790,10588,16521,6644,20880,15632,27078,25463,20124,15728,30042,16604,17223,4388,23646,32683,23688,12439,30630,3895,7926,22101,32406,21540,31799,3768,26679,21799,23740};
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
-        t.findOrder(3, new int[][]{{0,1},{0,2},{1,2}});
+        ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
+        t.reverseKGroup(n1, 2);
     }
 
 
@@ -23,45 +24,36 @@ class ListNode {
 }
 
 class Test {
-    public int[] findOrder(int numCourses, int[][] prerequisites) {
-        HashMap<Integer, LinkedList<Integer>> hmap = new HashMap<>();
-        for (int[] tup : prerequisites) {
-            int course = tup[0], pre = tup[1];
-            if (hmap.containsKey(course))
-                hmap.get(course).add(pre);
-            else {
-                hmap.put(course, new LinkedList<>());
-            }
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (k == 1)
+            return head;
+        ListNode dummy = new ListNode(-1, head);
+        ListNode p = head, pre = dummy;
+        int num = 0;
+        while (p != null) {
+            num++;
+            if (num == k) {
+                ListNode start = pre.next, nextStart = p.next;
+                pre.next = reverse(start, p);
+                pre = start;
+                pre.next = nextStart;
+                p = nextStart;
+                num = 0;
+            } else
+                p = p.next;
         }
+        return dummy.next;
+    }
 
-        Queue<Integer> queue = new LinkedList<>();
-        for (int i = 0; i < numCourses; i++) {
-            if (!hmap.containsKey(i)) {
-                queue.add(i);
-            }
+    ListNode reverse(ListNode head, ListNode tail) {
+        ListNode headnew = null, p = head, tailNext = tail.next;
+        while (p != tailNext) {
+            ListNode tmp = p.next;
+            p.next = headnew;
+            headnew = p;
+            p = tmp;
         }
-
-        int[] re = new int[numCourses];
-        int ind = 0;
-        while (!queue.isEmpty()) {
-            int cour = queue.poll();
-            re[ind++] = cour;
-            LinkedList<Integer> removes = new LinkedList<>();
-            for (Map.Entry<Integer, LinkedList<Integer>> entry : hmap.entrySet()) {
-                entry.getValue().remove((Integer)cour);
-                if (entry.getValue().size() == 0) {
-                    queue.add(entry.getKey());
-                    removes.add(entry.getKey());
-                }
-            }
-
-            for (Integer i : removes)
-                hmap.remove(i);
-        }
-
-        if (ind != numCourses)
-            return new int[]{};
-        return re;
+        return headnew;
     }
 
 
