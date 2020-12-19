@@ -224,5 +224,32 @@ public class Other {
         return re.toString();
     }
 
-    //
+    // 41. 缺失的第一个正数
+    public int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            while (nums[i] > 0 && nums[i] <= n && nums[i] != i+1) {
+                int num = nums[i];
+                int tmp =  nums[num-1];
+                if (num == tmp)
+                    break;
+                nums[num-1] = num;
+                nums[i] = tmp;
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if (nums[i-1] != i)
+                return i;
+        }
+        return n+1;
+    }
+
+    // 42. 接雨水
+    public int trap(int[] height) {
+        int sum = 0, l = 0, h = 1;
+        int maxNum, maxInd;
+        while (h < height.length) {
+
+        }
+    }
 }
