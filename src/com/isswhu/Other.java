@@ -245,11 +245,54 @@ public class Other {
     }
 
     // 42. 接雨水
-    public int trap(int[] height) {
+    public int trap2(int[] height) {
         int sum = 0, l = 0, h = 1;
-        int maxNum, maxInd;
-        while (h < height.length) {
-
+        int maxNum = 0, maxInd = -1;
+        while (l < height.length-1) {
+            if (h >= height.length) {
+                for (int s = l+1; s <= maxInd-1; s++) {
+                    sum += maxNum - height[s];
+                }
+                l = maxInd;
+                h = maxInd+1;
+                maxNum = 0;
+                maxInd = -1;
+                continue;
+            }
+            if (height[h] >= maxNum) {
+                maxNum = height[h];
+                maxInd = h;
+            }
+            if (height[h] >= height[l]) {
+                for (int s = l+1; s <= h-1; s++) {
+                    sum += height[l] - height[s];
+                }
+                l = h;
+                maxNum = 0;
+                maxInd = -1;
+            }
+            h++;
         }
+        return sum;
+    }
+
+    public int trap(int[] height) {
+        if (height.length <= 2)
+            return 0;
+        int left = 1, right = height.length - 2;
+        int maxLeft = height[0], maxRight = height[height.length-1];
+        int sum = 0;
+        while (left <= right) {
+            if (maxLeft < maxRight) {
+                sum += Math.max(maxLeft-height[left], 0);
+                left++;
+                maxLeft = Math.max(maxLeft, height[left-1]);
+            } else {
+                sum += Math.max(maxRight-height[right], 0);
+                right--;
+                maxRight = Math.max(maxRight, height[right+1]);
+            }
+        }
+        return sum;
     }
 }
