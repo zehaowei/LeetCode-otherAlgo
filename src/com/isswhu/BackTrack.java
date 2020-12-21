@@ -34,6 +34,37 @@ public class BackTrack {
         }
     }
 
+    // 47. 全排列 II
+    ArrayList<List<Integer>> res;
+    LinkedList<Integer> temp;
+    boolean[] visited;
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        res = new ArrayList<>();
+        if (nums.length == 0)
+            return res;
+        temp = new LinkedList<>();
+        visited = new boolean[nums.length];
+        Arrays.sort(nums);
+        backtrack47(nums, 0);
+        return res;
+    }
+
+    void backtrack47(int[] nums, int t) {
+        if (t == nums.length) {
+            res.add(new LinkedList<>(temp));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (visited[i] || i > 0 && nums[i] == nums[i-1] && !visited[i-1])
+                continue;
+            visited[i] = true;
+            temp.add(nums[i]);
+            backtrack47(nums, t+1);
+            temp.removeLast();
+            visited[i] = false;
+        }
+    }
+
     // 131 Palindrome Partitioning
     public static List<List<String>> partition(String s) {
         if (s.length() == 0)

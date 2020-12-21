@@ -10,7 +10,7 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        t.reverseKGroup(n1, 2);
+        t.permuteUnique(new int[]{1,1,2});
     }
 
 
@@ -24,36 +24,34 @@ class ListNode {
 }
 
 class Test {
-    public ListNode reverseKGroup(ListNode head, int k) {
-        if (k == 1)
-            return head;
-        ListNode dummy = new ListNode(-1, head);
-        ListNode p = head, pre = dummy;
-        int num = 0;
-        while (p != null) {
-            num++;
-            if (num == k) {
-                ListNode start = pre.next, nextStart = p.next;
-                pre.next = reverse(start, p);
-                pre = start;
-                pre.next = nextStart;
-                p = nextStart;
-                num = 0;
-            } else
-                p = p.next;
-        }
-        return dummy.next;
+    ArrayList<List<Integer>> res;
+    LinkedList<Integer> temp;
+    boolean[] visited;
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        res = new ArrayList<>();
+        if (nums.length == 0)
+            return res;
+        temp = new LinkedList<>();
+        visited = new boolean[nums.length];
+        Arrays.sort(nums);
+        backtrack47(nums, 0);
+        return res;
     }
 
-    ListNode reverse(ListNode head, ListNode tail) {
-        ListNode headnew = null, p = head, tailNext = tail.next;
-        while (p != tailNext) {
-            ListNode tmp = p.next;
-            p.next = headnew;
-            headnew = p;
-            p = tmp;
+    void backtrack47(int[] nums, int t) {
+        if (t == nums.length) {
+            res.add(new LinkedList<>(temp));
+            return;
         }
-        return headnew;
+        for (int i = 0; i < nums.length; i++) {
+            if (visited[i] || i > 0 && nums[i] == nums[i-1] && visited[i-1])
+                continue;
+            visited[i] = true;
+            temp.add(nums[i]);
+            backtrack47(nums, t+1);
+            temp.removeLast();
+            visited[i] = false;
+        }
     }
 
 

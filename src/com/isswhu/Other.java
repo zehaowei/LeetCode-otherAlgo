@@ -295,4 +295,69 @@ public class Other {
         }
         return sum;
     }
+
+    // 43. 字符串相乘
+    public String multiply(String num1, String num2) {
+        if (num1.equals("0") || num2.equals("0"))
+            return "0";
+        if (num2.length() < num1.length()) {
+            String tmp = num1;
+            num1 = num2;
+            num2 = tmp;
+        }
+
+        String re = "";
+        for (int i = num1.length()-1; i >= 0; i--) {
+            StringBuilder str1 = new StringBuilder();
+            int remain = 0;
+            for (int j = 0; j < num1.length()-1-i; j++)
+                str1.append(0);
+            for (int j = num2.length()-1; j >= 0; j--) {
+                int a = num1.charAt(i) - '0', b = num2.charAt(j) - '0';
+                int sum = a*b+remain;
+                int num = sum % 10;
+                remain = sum / 10;
+                str1.append(num);
+            }
+            if (remain != 0)
+                str1.append(remain);
+            re = add(re, str1.reverse().toString());
+        }
+
+        return re;
+    }
+
+    String add(String s1, String s2) {
+        if (s1.equals(""))
+            return s2;
+        int remain = 0;
+        StringBuilder re = new StringBuilder();
+        for (int i = s1.length()-1, j = s2.length()-1;
+             i >= 0 || j >= 0 || remain > 0;
+             i--, j--) {
+            int a = i < 0 ? 0 : s1.charAt(i) - '0';
+            int b = j < 0 ? 0 : s2.charAt(j) - '0';
+            int sum = a+b+remain;
+            int num = sum % 10;
+            remain = sum / 10;
+            re.append(num);
+        }
+        return re.reverse().toString();
+    }
+
+    // 415. 字符串相加
+    public String addStrings(String num1, String num2) {
+        StringBuilder re = new StringBuilder();
+        int remain = 0;
+        for (int i = num1.length()-1, j = num2.length()-1;
+        i >= 0 || j >= 0 || remain > 0;
+        i--, j--) {
+            int a = i < 0 ? 0 : num1.charAt(i) - '0';
+            int b = j < 0 ? 0 : num2.charAt(j) - '0';
+            int sum = a+b+remain;
+            re.append(sum % 10);
+            remain = sum / 10;
+        }
+        return re.reverse().toString();
+    }
 }
