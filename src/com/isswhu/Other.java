@@ -345,6 +345,66 @@ public class Other {
         return re.reverse().toString();
     }
 
+    // 59. 螺旋矩阵 II
+    public int[][] generateMatrix(int n) {
+        int[][] re = new int[n][n];
+        int t = 0, b = n-1, l = 0, r = n-1;
+        int num = 1;
+        while (true) {
+            for (int i = l; i <= r; i++) {
+                re[t][i] = num++;
+            }
+            if (++t > b)
+                break;
+
+            for (int i = t; i <= b; i++) {
+                re[i][r] = num++;
+            }
+            if (--r < l)
+                break;
+
+            for (int i = r; i >= l; i--) {
+                re[b][i] = num++;
+            }
+            if (--b < t)
+                break;
+
+            for (int i = b; i >= t; i--) {
+                re[i][l] = num++;
+            }
+            if (++l > r)
+                break;
+        }
+        return re;
+    }
+
+    // 65. 有效数字
+    public boolean isNumber(String s) {
+        if (s == null || s.length() == 0)
+            return false;
+        boolean hasE = false, hasDot = false, hasNum = false;
+        char[] chs = s.trim().toCharArray();
+        for (int i = 0; i < chs.length; i++) {
+            if (Character.isDigit(chs[i]))
+                hasNum = true;
+            else if (chs[i] == '.') {
+                if (hasDot || hasE)
+                    return false;
+                hasDot = true;
+            } else if (chs[i] == 'e') {
+                if (hasE || !hasNum)
+                    return false;
+                hasE = true;
+                hasNum = false;
+            } else if (chs[i] == '+' || chs[i] == '-') {
+                if (i != 0 && chs[i-1] != 'e')
+                    return false;
+            } else
+                return false;
+        }
+        return hasNum;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();

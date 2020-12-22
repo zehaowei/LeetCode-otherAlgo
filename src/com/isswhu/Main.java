@@ -10,7 +10,7 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        t.permuteUnique(new int[]{1,1,2});
+        t.generateMatrix(3);
     }
 
 
@@ -24,34 +24,36 @@ class ListNode {
 }
 
 class Test {
-    ArrayList<List<Integer>> res;
-    LinkedList<Integer> temp;
-    boolean[] visited;
-    public List<List<Integer>> permuteUnique(int[] nums) {
-        res = new ArrayList<>();
-        if (nums.length == 0)
-            return res;
-        temp = new LinkedList<>();
-        visited = new boolean[nums.length];
-        Arrays.sort(nums);
-        backtrack47(nums, 0);
-        return res;
-    }
+    public int[][] generateMatrix(int n) {
+        int[][] re = new int[n][n];
+        int t = 0, b = n-1, l = 0, r = n-1;
+        int num = 1;
+        while (true) {
+            for (int i = l; i <= r; i++) {
+                re[t][i] = num++;
+            }
+            if (++t > b)
+                break;
 
-    void backtrack47(int[] nums, int t) {
-        if (t == nums.length) {
-            res.add(new LinkedList<>(temp));
-            return;
+            for (int i = t; i <= b; i++) {
+                re[i][r] = num++;
+            }
+            if (--r < l)
+                break;
+
+            for (int i = r; i >= l; i--) {
+                re[b][i] = num++;
+            }
+            if (--b < t)
+                break;
+
+            for (int i = b; i >= t; i--) {
+                re[i][l] = num++;
+            }
+            if (++l > r)
+                break;
         }
-        for (int i = 0; i < nums.length; i++) {
-            if (visited[i] || i > 0 && nums[i] == nums[i-1] && visited[i-1])
-                continue;
-            visited[i] = true;
-            temp.add(nums[i]);
-            backtrack47(nums, t+1);
-            temp.removeLast();
-            visited[i] = false;
-        }
+        return re;
     }
 
 

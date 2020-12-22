@@ -65,6 +65,119 @@ public class BackTrack {
         }
     }
 
+    // 51. N 皇后
+    ArrayList<List<String>> result;
+    ArrayList<StringBuilder> list;
+    boolean[] cols;
+    boolean[] iplusj;
+    boolean[] iminusj;
+    public List<List<String>> solveNQueens(int n) {
+        result = new ArrayList<>();
+        list = new ArrayList<>();
+        cols = new boolean[n];
+        iplusj = new boolean[2*n-1];
+        iminusj = new boolean[2*n-1];
+        for (int i = 0; i < n; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < n; j++)
+                sb.append('.');
+            list.add(sb);
+        }
+        backtrack51(0, n, -1);
+        return result;
+    }
+
+    void backtrack51(int t, int n, int q) {
+        if (t == n) {
+            ArrayList<String> l = new ArrayList<>();
+            for (int i = 0; i < n; i++)
+                l.add(list.get(i).toString());
+            result.add(l);
+            return;
+        }
+
+        int i = q+1;
+        for (int j = 0; j < n; j++) {
+            if (cols[j] || iplusj[i+j] || iminusj[i-j+n-1])
+                continue;
+            list.get(i).replace(j, j+1, "Q");
+            cols[j] = true;
+            iplusj[i+j] = true;
+            iminusj[i-j+n-1] = true;
+            backtrack51(t+1, n, i);
+            list.get(i).replace(j, j+1, ".");
+            cols[j] = false;
+            iplusj[i+j] = false;
+            iminusj[i-j+n-1] = false;
+        }
+    }
+
+    // 52. N皇后 II
+    int sum;
+    public int totalNQueens(int n) {
+        sum = 0;
+        boolean[] cols = new boolean[n], iplusj = new boolean[2*n+1], iminusj = new boolean[2*n+1];
+        bktract52(cols, iplusj, iminusj, 0, n, -1);
+        return sum;
+    }
+
+    void bktract52(boolean[] cols, boolean[] iplusj, boolean[] iminusj,
+                   int t, int n, int row) {
+        if (t == n) {
+            sum++;
+            return;
+        }
+        int i = row+1;
+        for (int j = 0; j < n; j++) {
+            if (cols[j] || iplusj[i+j] || iminusj[i-j+n-1])
+                continue;
+            cols[j] = true;
+            iplusj[i+j] = true;
+            iminusj[i-j+n-1] = true;
+            bktract52(cols, iplusj, iminusj, t+1, n, i);
+            cols[j] = false;
+            iplusj[i+j] = false;
+            iminusj[i-j+n-1] = false;
+        }
+    }
+
+    // 60. 排列序列
+    public String getPermutation(int n, int k) {
+        int sum = 1;
+        int[] nums = new int[n];
+        for (int i = 1; i <= n-1; i++) {
+            sum *= i;
+            nums[i] = sum;
+        }
+        boolean[] visited = new boolean[n+1];
+        StringBuilder re = new StringBuilder();
+        backtrack60(re, nums, visited, n, k-1);
+        return re.toString();
+    }
+
+    void backtrack60(StringBuilder re, int[] nums, boolean[] visited, int n, int k) {
+        if (n == 1) {
+            for (int i = 1; i < visited.length; i++) {
+                if (!visited[i]) {
+                    re.append(i);
+                    return;
+                }
+            }
+        }
+
+        int ind = k / nums[n-1], t = -1;
+        for (int i = 1; i < visited.length; i++) {
+            if (!visited[i]) {
+                if (++t == ind) {
+                    visited[i] = true;
+                    re.append(i);
+                    backtrack60(re, nums, visited, n-1, k % nums[n-1]);
+                    break;
+                }
+            }
+        }
+    }
+
     // 131 Palindrome Partitioning
     public static List<List<String>> partition(String s) {
         if (s.length() == 0)
