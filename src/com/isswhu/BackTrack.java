@@ -178,6 +178,29 @@ public class BackTrack {
         }
     }
 
+    // 77. 组合
+    ArrayList<List<Integer>> re77;
+    ArrayList<Integer> tmp77;
+    public List<List<Integer>> combine(int n, int k) {
+        re77 = new ArrayList<>();
+        tmp77 = new ArrayList<>();
+        backtrack77(1, n, 0, k);
+        return re77;
+    }
+
+    void backtrack77(int start, int n, int cur, int k) {
+        if (cur == k) {
+            re77.add(new ArrayList<>(tmp77));
+            return;
+        }
+
+        for (int i = start; i <= n-k+cur+1; i++) {
+            tmp77.add(i);
+            backtrack77(i+1, n, cur+1, k);
+            tmp77.remove(tmp77.size()-1);
+        }
+    }
+
     // 131 Palindrome Partitioning
     public static List<List<String>> partition(String s) {
         if (s.length() == 0)

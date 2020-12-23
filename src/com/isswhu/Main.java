@@ -10,7 +10,7 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        t.generateMatrix(3);
+        t.fullJustify(new String[]{"This", "is", "an", "example", "of", "text", "justification."}, 16);
     }
 
 
@@ -24,35 +24,54 @@ class ListNode {
 }
 
 class Test {
-    public int[][] generateMatrix(int n) {
-        int[][] re = new int[n][n];
-        int t = 0, b = n-1, l = 0, r = n-1;
-        int num = 1;
-        while (true) {
-            for (int i = l; i <= r; i++) {
-                re[t][i] = num++;
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        ArrayList<String> re = new ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            if (line.length() == 0) {
+                line.append(words[i]);
+            } else if (line.length() + words[i].length() + 1 > maxWidth) {
+                if (line.length() != maxWidth) {
+                    int blanks = maxWidth - line.length();
+                    String[] wds = line.toString().split(" ");
+                    blanks += wds.length - 1;
+                    if (wds.length == 1) {
+                        for (int k = 0; k < blanks; k++)
+                            line.append(' ');
+                    } else {
+                        int base = blanks / (wds.length - 1);
+                        int remain = blanks % (wds.length - 1);
+                        line = new StringBuilder();
+                        line.append(wds[0]);
+                        for (int j = 1; j < wds.length; j++) {
+                            for (int k = 0; k < base; k++)
+                                line.append(' ');
+                            if (remain != 0) {
+                                line.append(' ');
+                                remain--;
+                            }
+                            line.append(wds[j]);
+                        }
+                    }
+                }
+                re.add(line.toString());
+                line = new StringBuilder();
+            } else {
+                line.append(' ').append(words[i]);
             }
-            if (++t > b)
-                break;
-
-            for (int i = t; i <= b; i++) {
-                re[i][r] = num++;
-            }
-            if (--r < l)
-                break;
-
-            for (int i = r; i >= l; i--) {
-                re[b][i] = num++;
-            }
-            if (--b < t)
-                break;
-
-            for (int i = b; i >= t; i--) {
-                re[i][l] = num++;
-            }
-            if (++l > r)
-                break;
         }
+        String last = re.get(re.size()-1);
+        String[] wd = last.split(" ");
+        StringBuilder lastS = new StringBuilder();
+        lastS.append(wd[0]);
+        for (int i = 1; i < wd.length; i++) {
+            lastS.append(' ').append(wd[i]);
+        }
+        for (int i = lastS.length(); i < maxWidth; i++) {
+            lastS.append(' ');
+        }
+        re.remove(re.size()-1);
+        re.add(lastS.toString());
         return re;
     }
 

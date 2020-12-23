@@ -1,6 +1,6 @@
 package com.isswhu;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class Other {
     // 6. Z 字形变换
@@ -403,6 +403,144 @@ public class Other {
                 return false;
         }
         return hasNum;
+    }
+
+    // 68. 文本左右对齐
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        ArrayList<String> re = new ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            if (line.length() == 0) {
+                line.append(words[i]);
+            } else if (line.length() + words[i].length() + 1 > maxWidth) {
+                if (line.length() != maxWidth) {
+                    int blanks = maxWidth - line.length();
+                    String[] wds = line.toString().split(" ");
+                    blanks += wds.length - 1;
+                    if (wds.length == 1) {
+                        for (int k = 0; k < blanks; k++)
+                            line.append(' ');
+                    } else {
+                        int base = blanks / (wds.length - 1);
+                        int remain = blanks % (wds.length - 1);
+                        line = new StringBuilder();
+                        line.append(wds[0]);
+                        for (int j = 1; j < wds.length; j++) {
+                            for (int k = 0; k < base; k++)
+                                line.append(' ');
+                            if (remain != 0) {
+                                line.append(' ');
+                                remain--;
+                            }
+                            line.append(wds[j]);
+                        }
+                    }
+                }
+                re.add(line.toString());
+                line = new StringBuilder();
+                line.append(words[i]);
+            } else {
+                line.append(' ').append(words[i]);
+            }
+        }
+
+        for (int i = line.length(); i < maxWidth; i++) {
+            line.append(' ');
+        }
+        re.add(line.toString());
+        return re;
+    }
+
+    // 71. 简化路径
+    public String simplifyPath(String path) {
+        char[] chs = path.toCharArray();
+        Deque<String> queue = new LinkedList<>();
+        for (int i = 0; i < chs.length; ) {
+            if (chs[i] == '.' && (i == chs.length-1 || chs[i+1] == '/')) {
+                i = i+2;
+            } else if (i < chs.length-1 && chs[i] == '.' && chs[i+1] == '.'
+                    && (i == chs.length-2 || chs[i+2] == '/')) {
+                if (!queue.isEmpty())
+                    queue.pollLast();
+                i = i+3;
+            } else if (chs[i] == '/'){
+                i++;
+            } else {
+                StringBuilder wd = new StringBuilder();
+                while (i < chs.length && chs[i] != '/') {
+                    wd.append(chs[i++]);
+                }
+                if (wd.length() != 0)
+                    queue.addLast(wd.toString());
+            }
+        }
+        StringBuilder re = new StringBuilder();
+        while (!queue.isEmpty())
+            re.append('/').append(queue.pollFirst());
+        if (re.length() == 0)
+            re.append('/');
+        return re.toString();
+    }
+
+    // 73. 矩阵置零
+    public void setZeroes(int[][] matrix) {
+        int m = matrix.length;
+        if (m == 0)
+            return;
+        int n = matrix[0].length;
+        int row = -1, col = -1;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    if (row == -1) {
+                        row = j;
+                        col = i;
+                    } else {
+                        matrix[i][row] = 0;
+                        matrix[col][j] = 0;
+                    }
+                }
+            }
+        }
+
+        if (row == -1)
+            return;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != col && j != row && (matrix[i][row] == 0 || matrix[col][j] == 0)) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+        for (int j = 0; j < n; j++)
+            matrix[col][j] = 0;
+        for (int i = 0; i < m; i++)
+            matrix[i][row] = 0;
+    }
+
+    // 82. 删除排序链表中的重复元素 II
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode dummy = new ListNode(-1, head);
+        ListNode pre = dummy, cur1 = head, cur2 = head.next;
+        while (cur2 != null) {
+            if (cur1.val == cur2.val) {
+                while (cur2 != null && cur2.val == cur1.val)
+                    cur2 = cur2.next;
+                pre.next = cur2;
+                cur1 = cur2;
+            } else {
+                pre = pre.next;
+                cur1 = cur1.next;
+            }
+            if (cur2 != null)
+                cur2 = cur2.next;
+        }
+
+        return dummy.next;
     }
 
     // 415. 字符串相加
