@@ -543,6 +543,71 @@ public class Other {
         return dummy.next;
     }
 
+    // 92. 反转链表 II
+    public ListNode reverseBetween(ListNode head, int m, int n) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode dummy = new ListNode(-1, head);
+        ListNode pre = dummy, cur = head, next = head.next;
+        int num = 1;
+        while (num != m) {
+            pre = pre.next;
+            cur = cur.next;
+            next = next.next;
+            num++;
+        }
+
+        ListNode first = cur;
+        pre.next = null;
+        while (num < n) {
+            cur.next = pre.next;
+            pre.next = cur;
+            cur = next;
+            next = next.next;
+            num++;
+        }
+        cur.next = pre.next;
+        pre.next = cur;
+        first.next = next;
+        return dummy.next;
+    }
+
+    // 118. 杨辉三角
+    public List<List<Integer>> generate(int numRows) {
+        ArrayList<List<Integer>> re = new ArrayList<>();
+        if (numRows == 0)
+            return re;
+        ArrayList<Integer> first = new ArrayList<>();
+        first.add(1);
+        re.add(first);
+        for (int i = 1; i < numRows; i++) {
+            ArrayList<Integer> line = new ArrayList<>();
+            line.add(1);
+            for (int j = 1; j < i; j++) {
+                line.add(re.get(i-1).get(j) + re.get(i-1).get(j-1));
+            }
+            line.add(1);
+            re.add(line);
+        }
+        return re;
+    }
+
+    // 119. 杨辉三角 II
+    public List<Integer> getRow(int rowIndex) {
+        Integer[] line = new Integer[rowIndex+1];
+        line[0] = 1;
+        for (int i = 1; i <= rowIndex; i++) {
+            line[i] = 1;
+            for (int j = i-1; j > 0; j--) {
+                line[j] = line[j] + line[j-1];
+            }
+        }
+
+        List<Integer> re = new ArrayList<>();
+        Collections.addAll(re, line);
+        return re;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();

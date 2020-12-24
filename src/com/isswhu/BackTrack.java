@@ -201,6 +201,118 @@ public class BackTrack {
         }
     }
 
+    // 89. 格雷编码
+    ArrayList<Integer> re89;
+    int[] state;
+    public List<Integer> grayCode(int n) {
+        re89 = new ArrayList<>();
+        if (n == 0) {
+            re89.add(0);
+            return re89;
+        }
+
+        state = new int[n];
+        int tmp = 0;
+        backtrace89(0, n, state, tmp);
+        return re89;
+    }
+
+    void backtrace89(int t, int n, int[] state, int tmp) {
+        if (t == n){
+            re89.add(tmp);
+            return;
+        }
+        int move = n-t-1;
+        int base = 1 << move; // to 1 |
+        if (state[t] == 0) {
+            tmp = tmp & (~base);
+            backtrace89(t+1, n, state, tmp);
+
+            tmp = tmp | base;
+            backtrace89(t+1, n, state, tmp);
+
+            state[t] = 1;
+        } else {
+            tmp = tmp | base;
+            backtrace89(t+1, n, state, tmp);
+
+            tmp = tmp & (~base);
+            backtrace89(t+1, n, state, tmp);
+
+            state[t] = 0;
+        }
+    }
+
+    // 90. 子集 II
+    ArrayList<List<Integer>> re90;
+    LinkedList<Integer> tmp90;
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        re90 = new ArrayList<>();
+        tmp90 = new LinkedList<>();
+        re90.add(new LinkedList<>());
+        Arrays.sort(nums);
+        backtrace90(0, 0, nums);
+        return re90;
+    }
+
+    void backtrace90(int t, int s, int[] nums) {
+        if (t == nums.length) {
+            return;
+        }
+
+        for (int i = s; i < nums.length; i++) {
+            if (i > s && nums[i] == nums[i-1])
+                continue;
+            tmp90.add(nums[i]);
+            re90.add(new LinkedList<>(tmp90));
+            backtrace90(t+1,i+1, nums);
+            tmp90.removeLast();
+        }
+    }
+
+    // 93. 复原IP地址
+    public List<String> restoreIpAddresses(String s) {
+        ArrayList<String> re = new ArrayList<>();
+        StringBuilder tmp = new StringBuilder();
+        backtrace93(0, 0, s, re, tmp);
+        return re;
+    }
+
+    void backtrace93(int t, int s, String nums, ArrayList<String> re, StringBuilder tmp) {
+        if (t == 4 ) {
+            if (s == nums.length())
+                re.add(tmp.toString());
+            return;
+        }
+
+        int remain = nums.length() - s;
+        if (s >= nums.length() || remain > (4-t)*3 || remain < (4-t))
+            return;
+
+        if (nums.charAt(s) == '0') {
+            if (t != 0)
+                tmp.append('.');
+            tmp.append('0');
+            backtrace93(t+1, s+1, nums, re, tmp);
+            tmp.deleteCharAt(tmp.length()-1);
+            if (t != 0)
+                tmp.deleteCharAt(tmp.length()-1);
+        } else {
+            for (int len = 1; len <= 3 && s+len <= nums.length(); len++) {
+                int num = Integer.parseInt(nums.substring(s, s+len));
+                if (num >= 1 && num <= 255) {
+                    if (t != 0)
+                        tmp.append('.');
+                    tmp.append(num);
+                    backtrace93(t+1, s+len, nums, re, tmp);
+                    tmp.delete(tmp.length()-len, tmp.length());
+                    if (t != 0)
+                        tmp.deleteCharAt(tmp.length()-1);
+                }
+            }
+        }
+    }
+
     // 131 Palindrome Partitioning
     public static List<List<String>> partition(String s) {
         if (s.length() == 0)
