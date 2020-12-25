@@ -608,6 +608,189 @@ public class Other {
         return re;
     }
 
+    // 128. 最长连续序列
+    int unionFind(HashMap<Integer, Integer> nums, int num) {
+        int root = num;
+        if (!nums.containsKey(root))
+            nums.put(num, num);
+        else {
+            while (nums.get(root) != root) {
+                root = nums.get(root);
+            }
+
+            int son = num;
+            while (nums.get(son) != root) {
+                int tmp = nums.get(son);
+                nums.put(son, root);
+                son = tmp;
+            }
+        }
+        return root;
+    }
+
+    void unionJoin(HashMap<Integer, Integer> nums, int a, int b) {
+        int root1 = unionFind(nums, a), root2 = unionFind(nums, b);
+        if (root1 != root2) {
+            nums.put(root2, root1);
+        }
+    }
+
+    public int longestConsecutive2(int[] nums) {
+        HashMap<Integer, Integer> hmap = new HashMap<>();
+        HashSet<Integer> hset = new HashSet<>();
+        for (int num : nums)
+            hset.add(num);
+        for (int num : nums) {
+            int root1 = unionFind(hmap, num);
+            if (hset.contains(num+1)) {
+                int rootR = unionFind(hmap, num+1);
+                unionJoin(hmap, rootR, root1);
+            }
+        }
+
+        int re = 0;
+        for (Map.Entry<Integer, Integer> e : hmap.entrySet()){
+            int root = unionFind(hmap, e.getValue());
+            re = Math.max(re, root - e.getKey()+1);
+        }
+        return re;
+    }
+
+    public int longestConsecutive(int[] nums) {
+        HashSet<Integer> hset = new HashSet<>();
+        for (int num : nums)
+            hset.add(num);
+
+        int re = 0;
+        for (int num : nums) {
+            if (!hset.contains(num-1)) {
+                int times = 1;
+                while(hset.contains(num+times))
+                    times++;
+                re = Math.max(re, times);
+            }
+        }
+        return re;
+    }
+
+    // 143. 重排链表
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null || head.next.next == null)
+            return;
+        Stack<ListNode> stk = new Stack<>();
+        int nums = 0;
+        ListNode cur = head;
+        while (cur != null) {
+            nums++;
+            cur = cur.next;
+        }
+
+        int ind = nums/2+1;
+        cur = head;
+        for (int i = 0; i < ind-1; i++)
+            cur = cur.next;
+        ListNode tmp = cur;
+        cur = cur.next;
+        tmp.next = null;
+        while (cur != null) {
+            stk.add(cur);
+            cur = cur.next;
+        }
+
+        ListNode pre = head, next = head.next;
+        while (!stk.isEmpty()) {
+            ListNode n = stk.pop();
+            pre.next = n;
+            n.next = next;
+            pre = next;
+            next = next.next;
+        }
+    }
+
+    class LRUCache {
+
+        class DNode {
+            DNode prev;
+            DNode next;
+            int key;
+            int val;
+            DNode(int k, int v, DNode prev, DNode next) {
+                this.key = k;
+                this.val = v;
+                this.prev = prev;
+                this.next = next;
+            }
+        }
+
+        HashMap<Integer, DNode> store;
+        int capacity;
+        DNode head;
+        DNode tail;
+
+        public LRUCache(int capacity) {
+            store = new HashMap<>(capacity);
+            this.capacity = capacity;
+            head = new DNode(-1,-1, null, null);
+            tail = new DNode(-1,-1, head, null);
+            head.next = tail;
+        }
+
+        void updatePos(DNode node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+            node.prev = head;
+            node.next = head.next;
+            head.next.prev = node;
+            head.next = node;
+        }
+
+        public int get(int key) {
+            if (store.containsKey(key)) {
+                DNode n = store.get(key);
+                updatePos(n);
+                return n.val;
+            }
+            return -1;
+        }
+
+        public void put(int key, int value) {
+            if (store.containsKey(key)) {
+                DNode n = store.get(key);
+                updatePos(n);
+                n.val = value;
+            }
+            else {
+                if (store.size() == capacity) {
+                    DNode last = tail.prev;
+                    store.remove(last.key);
+                    last.prev.next = tail;
+                    tail.prev = last.prev;
+                    last.prev = null;
+                    last.next = null;
+                }
+                DNode node = new DNode(key, value, head, head.next);
+                head.next.prev = node;
+                head.next = node;
+                store.put(key, node);
+            }
+        }
+    }
+
+    // 151. 翻转字符串里的单词
+    public String reverseWords(String s) {
+        StringBuilder re = new StringBuilder();
+        s = s.trim();
+        String[] wds = s.split(" ");
+        for (int i = wds.length-1; i >= 0; i--) {
+            if (!wds[i].equals(" ")) {
+                if (re.length() != 0)
+                    re.append(" ");
+                re.append(wds[i]);
+            }
+        }
+        return re.toString();
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();

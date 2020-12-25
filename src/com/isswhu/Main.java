@@ -10,7 +10,9 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        t.fullJustify(new String[]{"This", "is", "an", "example", "of", "text", "justification."}, 16);
+        t.longestConsecutive(new int[]{100,4,200,1,3,2});
+        String ss = "a good   example";
+        String[] re = ss.split(" ");
     }
 
 
@@ -24,56 +26,60 @@ class ListNode {
 }
 
 class Test {
-    public List<String> fullJustify(String[] words, int maxWidth) {
-        ArrayList<String> re = new ArrayList<>();
-        StringBuilder line = new StringBuilder();
-        for (int i = 0; i < words.length; i++) {
-            if (line.length() == 0) {
-                line.append(words[i]);
-            } else if (line.length() + words[i].length() + 1 > maxWidth) {
-                if (line.length() != maxWidth) {
-                    int blanks = maxWidth - line.length();
-                    String[] wds = line.toString().split(" ");
-                    blanks += wds.length - 1;
-                    if (wds.length == 1) {
-                        for (int k = 0; k < blanks; k++)
-                            line.append(' ');
-                    } else {
-                        int base = blanks / (wds.length - 1);
-                        int remain = blanks % (wds.length - 1);
-                        line = new StringBuilder();
-                        line.append(wds[0]);
-                        for (int j = 1; j < wds.length; j++) {
-                            for (int k = 0; k < base; k++)
-                                line.append(' ');
-                            if (remain != 0) {
-                                line.append(' ');
-                                remain--;
-                            }
-                            line.append(wds[j]);
-                        }
-                    }
-                }
-                re.add(line.toString());
-                line = new StringBuilder();
-            } else {
-                line.append(' ').append(words[i]);
+    int unionFind(HashMap<Integer, Integer> nums, int num) {
+        int root = num;
+        if (!nums.containsKey(root))
+            nums.put(num, num);
+        else {
+            while (nums.get(root) != root) {
+                root = nums.get(root);
+            }
+
+            int son = num;
+            while (nums.get(son) != root) {
+                int tmp = nums.get(son);
+                nums.put(son, root);
+                son = tmp;
             }
         }
-        String last = re.get(re.size()-1);
-        String[] wd = last.split(" ");
-        StringBuilder lastS = new StringBuilder();
-        lastS.append(wd[0]);
-        for (int i = 1; i < wd.length; i++) {
-            lastS.append(' ').append(wd[i]);
-        }
-        for (int i = lastS.length(); i < maxWidth; i++) {
-            lastS.append(' ');
-        }
-        re.remove(re.size()-1);
-        re.add(lastS.toString());
-        return re;
+        return root;
     }
 
+    void unionJoin(HashMap<Integer, Integer> nums, int a, int b) {
+        int root1 = unionFind(nums, a), root2 = unionFind(nums, b);
+        if (root1 != root2) {
+            nums.put(root2, root1);
+        }
+    }
 
+    public int longestConsecutive(int[] nums) {
+        HashMap<Integer, Integer> hmap = new HashMap<>();
+        for (int num : nums) {
+            int root1 = unionFind(hmap, num);
+            boolean left = hmap.containsKey(num-1), right = hmap.containsKey(num+1);
+            if (left && right) {
+                int rootL = unionFind(hmap, num-1), rootR = unionFind(hmap, num+1);
+                unionJoin(hmap, rootL, root1);
+                unionJoin(hmap, rootR, root1);
+            } else if (left) {
+                int rootL = unionFind(hmap, num-1);
+                unionJoin(hmap, rootL, root1);
+            } else if (right) {
+                int rootR = unionFind(hmap, num+1);
+                unionJoin(hmap, rootR, root1);
+            }
+        }
+
+        HashMap<Integer, Integer> count  = new HashMap<>();
+        int re = 0;
+        for (Integer root : hmap.values()){
+            root = unionFind(hmap, root);
+            if (count.containsKey(root)) {
+                count.put(root, count.get(root)+1);
+            } else
+                count.put(root, 1);
+            re = Math.max(re, count.get(root));
+        }
+        return re;
+    }
 }

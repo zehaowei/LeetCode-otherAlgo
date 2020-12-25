@@ -125,4 +125,32 @@ public class BasicDataStructure {
         }
         return maxnum;
     }
+
+    // 150. 逆波兰表达式求值
+    public int evalRPN(String[] tokens) {
+        Integer[] stk = new Integer[tokens.length/2+1];
+        int top = 0;
+        for (String s : tokens) {
+            if (Character.isDigit(s.charAt(0)) || s.charAt(0) == '-' && s.length() > 1) {
+                stk[top++] = Integer.valueOf(s);
+            } else {
+                Integer a = stk[--top], b = stk[--top], re = 0;
+                switch (s) {
+                    case "+":
+                        re = b+a;
+                        break;
+                    case "-":
+                        re = b-a;
+                        break;
+                    case "*":
+                        re = b*a;
+                        break;
+                    default:
+                        re = b/a;
+                }
+                stk[top++] = re;
+            }
+        }
+        return stk[0];
+    }
 }
