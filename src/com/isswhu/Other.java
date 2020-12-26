@@ -791,6 +791,104 @@ public class Other {
         return re.toString();
     }
 
+    // 165. 比较版本号
+    public int compareVersion(String version1, String version2) {
+        String[] vers1 = version1.split("\\.");
+        String[] vers2 = version2.split("\\.");
+        for (int i = 0; i < Math.max(vers1.length, vers2.length); i++) {
+            int a = i < vers1.length ? Integer.parseInt(vers1[i]) : 0;
+            int b = i < vers2.length ? Integer.parseInt(vers2[i]) : 0;
+            if (a < b)
+                return -1;
+            else if (a > b)
+                return 1;
+        }
+        return 0;
+    }
+
+    // 168. Excel表列名称
+    public String convertToTitle(int n) {
+        StringBuilder re = new StringBuilder();
+        while (true) {
+            int tmp = n, remain = 0, times = 0;
+            while (tmp != 0) {
+                remain = tmp % 26 == 0 ? 26 : tmp % 26;
+                tmp = tmp % 26 == 0 ? (tmp - 26) / 26 : tmp / 26;
+                times++;
+            }
+            re.append((char)('A'+remain-1));
+            if (times == 1)
+                break;
+            n = n - (int)Math.pow(26, times-1);
+        }
+        return re.toString();
+    }
+
+    // 171. Excel表列序号
+    public int titleToNumber(String s) {
+        char[] chs = s.toCharArray();
+        int re = 0, digits = 1;
+        for (int i = s.length()-1; i >= 0; i--) {
+            re += (chs[i] - 'A' + 1) * digits;
+            digits *= 26;
+        }
+        return re;
+    }
+
+    // 172. 阶乘后的零
+    public int trailingZeroes(int n) {
+        int re = 0;
+        while (n != 0) {
+            re += n / 5;
+            n /= 5;
+        }
+        return re;
+    }
+
+    // 189. 旋转数组
+    public void rotate2(int[] nums, int k) {
+        k = k % nums.length;
+        int tmp;
+        for (int i = 0; i < k; i++) {
+            tmp = nums[nums.length-1];
+            for (int j = nums.length-1; j > 0; j--) {
+                nums[j] = nums[j-1];
+            }
+            nums[0] = tmp;
+        }
+    }
+
+    public void rotate(int[] nums, int k) {
+        k = k % nums.length;
+        if (k == 0)
+            return;
+        int count = 0;
+        for (int i = 0; count < nums.length; i++) {
+            int tmp = nums[i], ind = (i+k)%nums.length;
+            do {
+                int a = nums[ind];
+                nums[ind] = tmp;
+                tmp = a;
+                ind = (ind+k)%nums.length;
+                count++;
+            } while (ind != (i+k)%nums.length);
+        }
+    }
+
+    // 190. 颠倒二进制位
+    public int reverseBits(int n) {
+        int re = 0, base = 1, base2 = 1 << 31;
+        for (int i = 0; i < 32; i++) {
+            int r = n & base;
+            base <<= 1;
+            if (r > 0) {
+                re = re | base2;
+            }
+            base2 >>>= 1;
+        }
+        return re;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();

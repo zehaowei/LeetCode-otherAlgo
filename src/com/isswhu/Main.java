@@ -10,9 +10,7 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        t.longestConsecutive(new int[]{100,4,200,1,3,2});
-        String ss = "a good   example";
-        String[] re = ss.split(" ");
+        int re = t.reverseBits(-3);
     }
 
 
@@ -26,59 +24,15 @@ class ListNode {
 }
 
 class Test {
-    int unionFind(HashMap<Integer, Integer> nums, int num) {
-        int root = num;
-        if (!nums.containsKey(root))
-            nums.put(num, num);
-        else {
-            while (nums.get(root) != root) {
-                root = nums.get(root);
+    public int reverseBits(int n) {
+        int re = 0, base = 1, base2 = 1 << 31;
+        for (int i = 0; i < 32; i++) {
+            int r = n & base;
+            base <<= 1;
+            if (r != 0) {
+                re = re | base2;
             }
-
-            int son = num;
-            while (nums.get(son) != root) {
-                int tmp = nums.get(son);
-                nums.put(son, root);
-                son = tmp;
-            }
-        }
-        return root;
-    }
-
-    void unionJoin(HashMap<Integer, Integer> nums, int a, int b) {
-        int root1 = unionFind(nums, a), root2 = unionFind(nums, b);
-        if (root1 != root2) {
-            nums.put(root2, root1);
-        }
-    }
-
-    public int longestConsecutive(int[] nums) {
-        HashMap<Integer, Integer> hmap = new HashMap<>();
-        for (int num : nums) {
-            int root1 = unionFind(hmap, num);
-            boolean left = hmap.containsKey(num-1), right = hmap.containsKey(num+1);
-            if (left && right) {
-                int rootL = unionFind(hmap, num-1), rootR = unionFind(hmap, num+1);
-                unionJoin(hmap, rootL, root1);
-                unionJoin(hmap, rootR, root1);
-            } else if (left) {
-                int rootL = unionFind(hmap, num-1);
-                unionJoin(hmap, rootL, root1);
-            } else if (right) {
-                int rootR = unionFind(hmap, num+1);
-                unionJoin(hmap, rootR, root1);
-            }
-        }
-
-        HashMap<Integer, Integer> count  = new HashMap<>();
-        int re = 0;
-        for (Integer root : hmap.values()){
-            root = unionFind(hmap, root);
-            if (count.containsKey(root)) {
-                count.put(root, count.get(root)+1);
-            } else
-                count.put(root, 1);
-            re = Math.max(re, count.get(root));
+            base2 >>>= 1;
         }
         return re;
     }
