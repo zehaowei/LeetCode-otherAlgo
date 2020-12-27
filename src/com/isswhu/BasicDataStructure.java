@@ -153,4 +153,193 @@ public class BasicDataStructure {
         }
         return stk[0];
     }
+
+    // 208 实现 Trie (前缀树)
+    class Trie {
+
+        TreeNode root;
+
+        class TreeNode {
+            boolean end;
+            TreeNode[] map;
+
+            TreeNode() {
+                end = false;
+                map = new TreeNode[26];
+            }
+        }
+
+        /** Initialize your data structure here. */
+        public Trie() {
+            root = new TreeNode();
+        }
+
+        /** Inserts a word into the trie. */
+        public void insert(String word) {
+            char[] chs = word.toCharArray();
+            TreeNode cur = root;
+            for (int i = 0; i < chs.length; i++) {
+                int ind = chs[i] - 'a';
+                if (cur.map[ind] == null) {
+                    cur.map[ind] = new TreeNode();
+                }
+                cur = cur.map[ind];
+            }
+            cur.end = true;
+        }
+
+        /** Returns if the word is in the trie. */
+        public boolean search(String word) {
+            char[] chs = word.toCharArray();
+            TreeNode cur = root;
+            for (int i = 0; i < chs.length; i++) {
+                int ind = chs[i] - 'a';
+                if (cur.map[ind] == null) {
+                    return false;
+                }
+                cur = cur.map[ind];
+            }
+            return cur.end;
+        }
+
+        /** Returns if there is any word in the trie that starts with the given prefix. */
+        public boolean startsWith(String prefix) {
+            char[] chs = prefix.toCharArray();
+            TreeNode cur = root;
+            for (int i = 0; i < chs.length; i++) {
+                int ind = chs[i] - 'a';
+                if (cur.map[ind] == null) {
+                    return false;
+                }
+                cur = cur.map[ind];
+            }
+            return true;
+        }
+    }
+
+    // 211. 添加与搜索单词 - 数据结构设计
+    class WordDictionary {
+
+        TreeNode root;
+
+        class TreeNode {
+            boolean end;
+            TreeNode[] map;
+
+            TreeNode() {
+                end = false;
+                map = new TreeNode[26];
+            }
+        }
+
+        /** Initialize your data structure here. */
+        public WordDictionary() {
+            root = new TreeNode();
+        }
+
+        /** Adds a word into the data structure. */
+        public void addWord(String word) {
+            char[] chs = word.toCharArray();
+            TreeNode cur = root;
+            for (int i = 0; i < chs.length; i++) {
+                int ind = chs[i] - 'a';
+                if (cur.map[ind] == null) {
+                    cur.map[ind] = new TreeNode();
+                }
+                cur = cur.map[ind];
+            }
+            cur.end = true;
+        }
+
+        /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+        public boolean search(String word) {
+            return backtrace(root, word.toCharArray(), 0);
+        }
+
+        boolean backtrace(TreeNode start, char[] chs, int s) {
+            TreeNode cur = start;
+            for (int i = s; i < chs.length; i++) {
+                if (chs[i] == '.') {
+                    for (int j = 0; j < 26; j++) {
+                        if (cur.map[j] != null && backtrace(cur.map[j], chs, i+1))
+                            return true;
+                    }
+                    return false;
+                } else {
+                    int ind = chs[i] - 'a';
+                    if (cur.map[ind] == null) {
+                        return false;
+                    }
+                    cur = cur.map[ind];
+                }
+            }
+            return cur.end;
+        }
+    }
+
+    // 212. 单词搜索 II
+    class TreeNode {
+        String wd;
+        TreeNode[] map;
+        int path;
+
+        TreeNode() {
+            wd = null;
+            map = new TreeNode[26];
+            path = 0;
+        }
+    }
+
+    List<String> re212;
+
+    public List<String> findWords(char[][] board, String[] words) {
+        TreeNode root = new TreeNode();
+        for (String wd : words) {
+            TreeNode cur = root;
+            char[] chs = wd.toCharArray();
+            for (char c : chs) {
+                int ind = c - 'a';
+                if (cur.map[ind] == null) {
+                    cur.map[ind] = new TreeNode();
+                    cur.path++;
+                }
+                cur = cur.map[ind];
+            }
+            cur.wd = wd;
+        }
+
+        re212 = new ArrayList<>();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                backtrack(root, board, i, j);
+            }
+        }
+        return re212;
+    }
+
+    void backtrack(TreeNode root, char[][] board, int i, int j) {
+        if (!(i >= 0 && i < board.length && j >= 0 && j < board[0].length && board[i][j] != '#'))
+            return;
+        int ind = board[i][j] - 'a';
+        if (root.map[ind] == null) {
+            return;
+        }
+        TreeNode next = root.map[ind];
+        if (next.wd != null) {
+            re212.add(next.wd);
+            next.wd = null;
+        }
+
+        board[i][j] = '#';
+        backtrack(next, board, i-1, j);
+        backtrack(next, board, i+1, j);
+        backtrack(next, board, i, j-1);
+        backtrack(next, board, i, j+1);
+        board[i][j] = (char) (ind + 'a');
+
+        if (next.wd == null && next.path == 0) {
+            root.map[ind] = null;
+            root.path--;
+        }
+    }
 }

@@ -889,6 +889,47 @@ public class Other {
         return re;
     }
 
+    // 201. 数字范围按位与
+    public int rangeBitwiseAnd(int m, int n) {
+        if (m == 0)
+            return 0;
+        else if (m == n)
+            return m;
+
+        int re = 0;
+        while (true) {
+            int base = 1, tmp = m;
+            while (tmp > 1) {
+                tmp /= 2;
+                base <<= 1;
+            }
+            if (n / base == m / base) {
+                re = re | base;
+                n -= base;
+                m -= base;
+            } else
+                break;
+        }
+        return re;
+    }
+
+    // 203. 移除链表元素
+    public ListNode removeElements(ListNode head, int val) {
+        ListNode dummy = new ListNode(-1, head);
+        ListNode pre = dummy, cur = head;
+        while (cur != null) {
+            if (cur.val == val) {
+                pre.next = cur.next;
+                cur.next = null;
+                cur = pre.next;
+            } else {
+                pre = cur;
+                cur = cur.next;
+            }
+        }
+        return dummy.next;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();
