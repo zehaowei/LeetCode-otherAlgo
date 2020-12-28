@@ -350,4 +350,28 @@ public class BackTrack {
             }
         }
     }
+
+    // 216. 组合总和 III
+    List<List<Integer>> re216 = new ArrayList<>();
+    ArrayList<Integer> tmp216 = new ArrayList<>();
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        backtrace216(0, k, 1, n);
+        return re216;
+    }
+
+    void backtrace216(int t, int k, int s, int n) {
+        if (n == 0) {
+            if (t == k)
+                re216.add(new ArrayList<>(tmp216));
+            return;
+        }
+
+        for (int i = s; i <= 9; i++) {
+            if (n-i < 0)
+                return;
+            tmp216.add(i);
+            backtrace216(t+1, k, i+1, n-i);
+            tmp216.remove(tmp216.size()-1);
+        }
+    }
 }

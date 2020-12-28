@@ -930,6 +930,50 @@ public class Other {
         return dummy.next;
     }
 
+    // 214. 最短回文串
+    public String shortestPalindrome(String s) {
+        if (s.length() == 0 || s.length() == 1)
+            return s;
+        int start = (s.length()-1) / 2;
+        for (int i = start; i >= 0; i--) {
+            int l = i , r = i + 1;
+            if (s.length() % 2 == 1) {
+                l = i - 1;
+                r = i + 1;
+            }
+            String re = valid(s, l, r);
+            if (re == null) {
+                l = i - 1;
+                r = i + 1;
+                if (s.length() % 2 == 1) {
+                    l = i - 1;
+                    r = i;
+                }
+                re = valid(s, l, r);
+                if (re != null)
+                    return re;
+            } else
+                return re;
+        }
+        return "";
+    }
+
+    String valid(String s, int l, int r) {
+        while (l >= 0 && s.charAt(l) == s.charAt(r)) {
+            l--;
+            r++;
+        }
+        if (l == -1) {
+            StringBuilder re = new StringBuilder();
+            for (int k = s.length()-1; k >= r; k--) {
+                re.append(s.charAt(k));
+            }
+            re.append(s);
+            return re.toString();
+        }
+        return null;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();

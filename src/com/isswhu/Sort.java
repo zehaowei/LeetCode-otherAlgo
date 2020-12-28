@@ -316,6 +316,46 @@ public class Sort {
         return sb.toString();
     }
 
+    // 215. 数组中的第K个最大元素
+    public int findKthLargest(int[] nums, int k) {
+        k = nums.length-k;
+        int l = 0, r = nums.length-1;
+        Random rand = new Random();
+        while (true) {
+            int s = rand.nextInt(r-l+1) + l;
+            int re = partition(nums, l, r, s);
+            if (re == k)
+                return nums[k];
+            else if (re < k) {
+                l = re+1;
+            } else {
+                r = re-1;
+            }
+        }
+    }
+
+    int partition(int[] nums, int l, int r, int s) {
+        int tmp = nums[l];
+        nums[l] = nums[s];
+        nums[s] = tmp;
+        int i = l, j = l+1;
+        while (j <= r) {
+            if (nums[j] < nums[l]) {
+                i++;
+                if (i != j) {
+                    int t = nums[i];
+                    nums[i] = nums[j];
+                    nums[j] = t;
+                }
+            }
+            j++;
+        }
+        tmp = nums[i];
+        nums[i] = nums[l];
+        nums[l] = tmp;
+        return i;
+    }
+
     // 220. 存在重复元素 III
     public boolean containsNearbyAlmostDuplicate2(int[] nums, int k, int t) {
         if (k < 1)
