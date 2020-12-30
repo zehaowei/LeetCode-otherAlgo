@@ -984,6 +984,29 @@ public class Other {
         return (C-A) * (D-B) - (right - left) * (top - bottom) + (G-E) * (H-F);
     }
 
+    // 228. 汇总区间
+    public List<String> summaryRanges(int[] nums) {
+        List<String> re = new ArrayList<>();
+        if (nums.length == 0)
+            return re;
+        int i = 0, j = 1;
+        while (j < nums.length) {
+            if (nums[j] != nums[j-1]+1) {
+                if (i == j-1)
+                    re.add(String.valueOf(nums[i]));
+                else
+                    re.add(nums[i]+"->"+nums[j-1]);
+                i = j;
+            }
+            j++;
+        }
+        if (i == j-1)
+            re.add(String.valueOf(nums[i]));
+        else
+            re.add(nums[i]+"->"+nums[j-1]);
+        return re;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();
