@@ -974,6 +974,16 @@ public class Other {
         return null;
     }
 
+    // 223. 矩形面积
+    public int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {
+        if (B >= H || F >= D || C <= E || G <= A) {
+            return (C-A) * (D-B) + (G-E) * (H-F);
+        }
+
+        int left = Math.max(E, A), right = Math.min(C, G), top = Math.min(D, H), bottom = Math.max(B, F);
+        return (C-A) * (D-B) - (right - left) * (top - bottom) + (G-E) * (H-F);
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();
