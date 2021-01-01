@@ -10,8 +10,7 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        int re = t.findKthLargest(new int[]{3,2,3,1,2,4,5,5,6}, 4);
-        System.out.println(re);
+        t.calculate("3/2");
     }
 
 
@@ -25,42 +24,40 @@ class ListNode {
 }
 
 class Test {
-    public int findKthLargest(int[] nums, int k) {
-        k = nums.length-k;
-        int l = 0, r = nums.length-1;
-        Random rand = new Random();
-        while (true) {
-            int s = rand.nextInt(r-l+1) + l;
-            int re = partition(nums, l, r, s);
-            if (re == k)
-                return nums[k];
-            else if (re < k) {
-                l = re+1;
-            } else {
-                r = re-1;
+    public int calculate(String s) {
+        Stack<Integer> stack = new Stack<>();
+        int n = s.length();
+        char operator = '+';
+        int num = 0;
+        for (int i = 0; i <= n; i++) {
+            char ch = i < n ? s.charAt(i) : operator;
+            if (ch == ' ') {
+                continue;
             }
-        }
-    }
-
-    int partition(int[] nums, int l, int r, int s) {
-        int tmp = nums[l];
-        nums[l] = nums[s];
-        nums[s] = tmp;
-        int i = l, j = l+1;
-        while (j <= r) {
-            if (nums[j] < nums[l]) {
-                i++;
-                if (i != j) {
-                    int t = nums[i];
-                    nums[i] = nums[j];
-                    nums[j] = t;
+            if (Character.isDigit(ch)) {
+                num = num * 10 + (ch - '0');
+            }
+            else {
+                if (operator == '+') {
+                    stack.push(num);
                 }
+                else if (operator == '-') {
+                    stack.push(-num);
+                }
+                else if (operator == '*') {
+                    stack.push(stack.pop() * num);
+                }
+                else {
+                    stack.push(stack.pop() / num);
+                }
+                operator = ch;
+                num = 0;
             }
-            j++;
         }
-        tmp = nums[i];
-        nums[i] = nums[l];
-        nums[l] = tmp;
-        return i;
+        int res = 0;
+        while (!stack.empty()) {
+            res += stack.pop();
+        }
+        return res;
     }
 }

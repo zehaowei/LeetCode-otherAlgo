@@ -1007,6 +1007,154 @@ public class Other {
         return re;
     }
 
+    // 224. 基本计算器
+    public int calculate2(String s) {
+        char[] chs = s.toCharArray();
+        Stack<Character> stk = new Stack<>();
+        ArrayList<String> lst = new ArrayList<>();
+        StringBuilder number = new StringBuilder();
+        for (char c : chs) {
+            if (c == ' ')
+                continue;
+
+            if (Character.isDigit(c)) {
+                number.append(c);
+            } else {
+                if (number.length() != 0) {
+                    lst.add(number.toString());
+                    number = new StringBuilder();
+                }
+                if (c == ')') {
+                    while (stk.peek() != '(')
+                        lst.add(String.valueOf(stk.pop()));
+                    stk.pop();
+                } else if (c == '+' || c == '-') {
+                    while (!stk.isEmpty() && stk.peek() != '(')
+                        lst.add(String.valueOf(stk.pop()));
+                    stk.push(c);
+                } else if (c == '(') {
+                    stk.push(c);
+                }
+            }
+        }
+        while (!stk.isEmpty())
+            lst.add(String.valueOf(stk.pop()));
+        Stack<Integer> stk2 = new Stack<>();
+        for (String op : lst) {
+            if (op.equals("+") || op.equals("-")) {
+                int a = stk2.pop(), b = stk2.pop();
+                if (op.equals("+"))
+                    stk2.push(a+b);
+                else
+                    stk2.push(b-a);
+            } else {
+                stk2.push(Integer.parseInt(op));
+            }
+        }
+        return stk2.pop();
+    }
+
+    // 227. 基本计算器 II
+    public int calculate(String s) {
+        char[] chs = s.trim().toCharArray();
+        Stack<Integer> stk = new Stack<>();
+        int start = 0;
+        if (Character.isDigit(chs[0])) {
+            StringBuilder num = new StringBuilder();
+            num.append(chs[0]);
+            int i = 1;
+            for (; i < chs.length; i++) {
+                if (!Character.isDigit(chs[i]))
+                    break;
+                num.append(chs[i]);
+            }
+            start = i;
+            stk.push(Integer.parseInt(num.toString()));
+        }
+
+        while (start < chs.length) {
+            while (chs[start] == ' ') {
+                start++;
+            }
+            char op = chs[start++];
+            StringBuilder num = new StringBuilder();
+            while (start < chs.length && (chs[start] == ' ' || Character.isDigit(chs[start]))) {
+                if (Character.isDigit(chs[start]))
+                    num.append(chs[start]);
+                start++;
+            }
+            int n = Integer.parseInt(num.toString());
+            if (op == '+')
+                stk.push(n);
+            else if (op == '-')
+                stk.push(-n);
+            else if (op == '*')
+                stk.push(stk.pop()*n);
+            else
+                stk.push(stk.pop()/n);
+        }
+        int re = 0;
+        while (!stk.isEmpty())
+            re += stk.pop();
+        return re;
+    }
+
+    // 229. 求众数 II
+    public List<Integer> majorityElement(int[] nums) {
+        List<Integer> re = new ArrayList<>();
+        if (nums.length == 0)
+            return re;
+        else if (nums.length == 1) {
+            re.add(nums[0]);
+            return re;
+        }
+        int a = Integer.MAX_VALUE, acount = 0, b = Integer.MAX_VALUE, bcount = 0;
+        for (int num : nums) {
+            if (num == a)
+                acount++;
+            else if (num == b)
+                bcount++;
+            else {
+                if (acount != 0 && bcount != 0) {
+                    acount--;
+                    bcount--;
+                } else if (acount == 0) {
+                    a = num;
+                    acount = 1;
+                } else {
+                    b = num;
+                    bcount = 1;
+                }
+            }
+        }
+        acount = 0;
+        bcount = 0;
+        for (int num : nums) {
+            if (num == a)
+                acount++;
+            else if (num == b)
+                bcount++;
+        }
+        if (acount > nums.length/3)
+            re.add(a);
+        if (bcount > nums.length/3)
+            re.add(b);
+        return re;
+    }
+
+    // 231. 2的幂
+    public boolean isPowerOfTwo(int n) {
+        if (n <= 0)
+            return false;
+        while (true) {
+            if (n == 1)
+                return true;
+            else if (n % 2 == 1)
+                return false;
+            n >>= 1;
+        }
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();
