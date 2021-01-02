@@ -1155,6 +1155,26 @@ public class Other {
         }
     }
 
+    // 238. 除自身以外数组的乘积
+    public int[] productExceptSelf(int[] nums) {
+        if (nums.length == 0)
+            return new int[]{};
+        else if (nums.length == 1)
+            return new int[1];
+
+        int[] re = new int[nums.length];
+        re[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            re[i] = re[i-1]*nums[i-1];
+        }
+        int base = 1;
+        for (int i = nums.length-2; i >= 0; i--) {
+            base *= nums[i+1];
+            re[i] *= base;
+        }
+        return re;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();
