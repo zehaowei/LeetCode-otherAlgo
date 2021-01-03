@@ -10,7 +10,7 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        t.calculate("3/2");
+        t.diffWaysToCompute("2-1-1");
     }
 
 
@@ -24,40 +24,49 @@ class ListNode {
 }
 
 class Test {
-    public int calculate(String s) {
-        Stack<Integer> stack = new Stack<>();
-        int n = s.length();
-        char operator = '+';
+    public List<Integer> diffWaysToCompute(String input) {
+        ArrayList<String> ops = new ArrayList<>();
         int num = 0;
-        for (int i = 0; i <= n; i++) {
-            char ch = i < n ? s.charAt(i) : operator;
-            if (ch == ' ') {
-                continue;
-            }
-            if (Character.isDigit(ch)) {
-                num = num * 10 + (ch - '0');
-            }
+        for (int i = 0; i < input.length(); i++) {
+            if (Character.isDigit(input.charAt(i)))
+                num = num*10 + (input.charAt(i) - '0');
             else {
-                if (operator == '+') {
-                    stack.push(num);
-                }
-                else if (operator == '-') {
-                    stack.push(-num);
-                }
-                else if (operator == '*') {
-                    stack.push(stack.pop() * num);
-                }
-                else {
-                    stack.push(stack.pop() / num);
-                }
-                operator = ch;
+                ops.add(String.valueOf(num));
                 num = 0;
+                ops.add(String.valueOf(input.charAt(i)));
             }
         }
-        int res = 0;
-        while (!stack.empty()) {
-            res += stack.pop();
+        ops.add(String.valueOf(num));
+        return dac(ops, 0, ops.size()-1);
+    }
+
+    List<Integer> dac(ArrayList<String> ops, int l, int r) {
+        List<Integer> re = new ArrayList<>();
+        if (r-l+1 <= 3) {
+            re.add(calcu(Integer.parseInt(ops.get(l)), ops.get(l+1), Integer.parseInt(ops.get(r))));
+            return re;
+        } else if (l == r) {
+            re.add(Integer.parseInt(ops.get(l)));
+            return re;
         }
-        return res;
+        for (int i = l; i < r; i+=2) {
+            List<Integer> re1 = dac(ops, l, i), re2 = dac(ops, i+2, r);
+            for (int num1 : re1) {
+                for (int num2 : re2)
+                    re.add(calcu(num1, ops.get(i+1), num2));
+            }
+        }
+        return re;
+    }
+
+    int calcu(int a, String op, int b) {
+        switch (op) {
+            case "+":
+                return a+b;
+            case "-":
+                return a-b;
+            default:
+                return a*b;
+        }
     }
 }

@@ -1175,6 +1175,90 @@ public class Other {
         return re;
     }
 
+    // 241. 为运算表达式设计优先级
+    public List<Integer> diffWaysToCompute(String input) {
+        HashMap<String, List<Integer>> hmap = new HashMap<>();
+        ArrayList<String> ops = new ArrayList<>();
+        int num = 0;
+        for (int i = 0; i < input.length(); i++) {
+            if (Character.isDigit(input.charAt(i)))
+                num = num*10 + (input.charAt(i) - '0');
+            else {
+                ops.add(String.valueOf(num));
+                num = 0;
+                ops.add(String.valueOf(input.charAt(i)));
+            }
+        }
+        ops.add(String.valueOf(num));
+        return dac(hmap, ops, 0, ops.size()-1);
+    }
+
+    List<Integer> dac(HashMap<String, List<Integer>> hmap, ArrayList<String> ops, int l, int r) {
+        if (hmap.containsKey(l+""+r))
+            return hmap.get(l+""+r);
+        List<Integer> re = new ArrayList<>();
+        if (l == r) {
+            re.add(Integer.parseInt(ops.get(l)));
+            hmap.put(l+""+r, re);
+            return re;
+        } else if (r-l+1 <= 3) {
+            re.add(calcu(Integer.parseInt(ops.get(l)), ops.get(l+1), Integer.parseInt(ops.get(r))));
+            hmap.put(l+""+r, re);
+            return re;
+        }
+        for (int i = l; i < r; i+=2) {
+            List<Integer> re1 = dac(hmap, ops, l, i), re2 = dac(hmap, ops, i+2, r);
+            for (int num1 : re1) {
+                for (int num2 : re2)
+                    re.add(calcu(num1, ops.get(i+1), num2));
+            }
+        }
+        hmap.put(l+""+r, re);
+        return re;
+    }
+
+    int calcu(int a, String op, int b) {
+        switch (op) {
+            case "+":
+                return a+b;
+            case "-":
+                return a-b;
+            default:
+                return a*b;
+        }
+    }
+
+    // 258. 各位相加
+    public int addDigits(int num) {
+        int tmp = num;
+        do {
+            num = tmp;
+            tmp = 0;
+            while (num > 0) {
+                tmp += num % 10;
+                num /= 10;
+            }
+        } while (tmp > 9);
+        return tmp;
+    }
+
+    // 263. 丑数
+    public boolean isUgly(int num) {
+        if (num <= 0)
+            return false;
+        while (num != 1) {
+            if (num % 2 == 0)
+                num /= 2;
+            else if (num % 3 == 0)
+                num /= 3;
+            else if (num % 5 == 0)
+                num /= 5;
+            else
+                return false;
+        }
+        return true;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();
