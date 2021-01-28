@@ -1242,6 +1242,31 @@ public class Other {
         return tmp;
     }
 
+    // 260. 只出现一次的数字 III
+    public int[] singleNumber(int[] nums) {
+        int mask = 0;
+        for (int num : nums)
+            mask = mask ^ num;
+
+        int diff = mask & (-mask);
+
+        int x = 0;
+        for (int num : nums) {
+            if ((num & diff) != 0)
+                x = x ^ num;
+        }
+        return new int[]{x, mask ^ x};
+    }
+
+    // 268. 丢失的数字
+    public int missingNumber(int[] nums) {
+        int sum = (1+nums.length)*nums.length/2;
+        int actualSum = 0;
+        for (int num : nums)
+            actualSum += num;
+        return sum - actualSum;
+    }
+
     // 263. 丑数
     public boolean isUgly(int num) {
         if (num <= 0)
