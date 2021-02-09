@@ -374,4 +374,30 @@ public class BackTrack {
             tmp216.remove(tmp216.size()-1);
         }
     }
+
+    // 282. 给表达式添加运算符
+    public List<String> addOperators(String num, int target) {
+        List<String> result = new ArrayList<>();
+        back282("", 0, 0, 0,num, target, result);
+        return result;
+    }
+
+    void back282(String path, int s, long val, long prev, String num, int target, List<String> result) {
+        if (s >= num.length()) {
+            if (target == val)
+                result.add(path);
+            return;
+        }
+        for (int i = 1; i <= num.length()-s; i++) {
+            long number = Long.parseLong(num.substring(s, s+i));
+            if (i != 1 && num.charAt(s) == '0') break;
+            if (s == 0) {
+                back282(path+number, s+i, number, number, num, target, result);
+            } else {
+                back282(path+"+"+number, s+i, val+number, number, num, target, result);
+                back282(path+"-"+number, s+i, val-number, -number, num, target, result);
+                back282(path+"*"+number, s+i, val-prev+prev*number, prev*number, num, target, result);
+            }
+        }
+    }
 }

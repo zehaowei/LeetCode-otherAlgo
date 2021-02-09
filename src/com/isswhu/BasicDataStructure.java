@@ -422,4 +422,42 @@ public class BasicDataStructure {
         node.val = node.next.val;
         node.next = node.next.next;
     }
+
+    // 284. 顶端迭代器
+    class PeekingIterator implements Iterator<Integer> {
+        Iterator<Integer> it;
+        Integer top;
+        Boolean hasTop;
+
+        public PeekingIterator(Iterator<Integer> iterator) {
+            // initialize any member here.
+            it = iterator;
+            hasTop = false;
+        }
+
+        // Returns the next element in the iteration without advancing the iterator.
+        public Integer peek() {
+            if (hasTop)
+                return top;
+            top = it.next();
+            hasTop = true;
+            return top;
+        }
+
+        // hasNext() and next() should behave the same as in the Iterator interface.
+        // Override them if needed.
+        @Override
+        public Integer next() {
+            if (hasTop) {
+                hasTop = false;
+                return top;
+            }
+            return it.next();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return hasTop || it.hasNext();
+        }
+    }
 }

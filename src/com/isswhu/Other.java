@@ -1284,6 +1284,111 @@ public class Other {
         return true;
     }
 
+    // 273. 整数转换英文表示
+    public String numberToWords(int num) {
+        if (num == 0)
+            return "Zero";
+        String[] units = new String[]{"", "Thousand", "Million", "Billion"};
+        String[] low = {"","One","Two","Three","Four","Five","Six","Seven","Eight","Nine"};
+        String[] mid = {"Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"};
+        String[] high = {"","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"};
+        Deque<String> result = new LinkedList<>();
+        int pos = 0;
+        while (num != 0) {
+            int number = 0;
+            for (int i = 0; num != 0 && i < 3; i++) {
+                int digit = num % 10;
+                num /= 10;
+                number = (int)(digit*Math.pow(10, i)) + number;
+            }
+            if (number > 0)
+                result.addFirst(units[pos]);
+            Deque<String> tem = new LinkedList<>();
+            if (number >= 100) {
+                int a = number / 100;
+                tem.addLast(low[a]);
+                tem.addLast("Hundred");
+                number %=  100;
+            }
+            if (number >= 20) {
+                int a = number / 10;
+                tem.addLast(high[a]);
+                number %= 10;
+            }
+            if (number >= 10) {
+                tem.addLast(mid[number-10]);
+                number = 0;
+            }
+            if (number > 0)
+                tem.addLast(low[number]);
+            while (!tem.isEmpty())
+                result.addFirst(tem.pollLast());
+            pos++;
+        }
+        StringBuilder re = new StringBuilder();
+        re.append(result.pollFirst());
+        while (!result.isEmpty()) {
+            if (!result.peek().equals(""))
+                re.append(' ');
+            re.append(result.pollFirst());
+        }
+        return re.toString();
+    }
+
+    // 289. 生命游戏
+    public void gameOfLife(int[][] board) {
+        int m = board.length, n = board[0].length;
+        for (int i = 0; i < m; i++){
+            for (int j = 0; j < n; j++){
+                int num = getLiveNum(board, i, j);
+                if (board[i][j]%2 == 1) {
+                    if (num <= 1 || num > 3)
+                        board[i][j] = 3;
+                } else if (num == 3){
+                    board[i][j] = 2;
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == 2)
+                    board[i][j] = 1;
+                else if (board[i][j] == 3)
+                    board[i][j] = 0;
+            }
+        }
+    }
+
+    int getLiveNum(int[][] board, int i, int j) {
+        int m = board.length, n = board[0].length, num = 0;
+        if (j-1 >= 0) {
+            if (i-1 >= 0 && board[i-1][j-1]%2 == 1)
+                num++;
+            if (board[i][j-1]%2 == 1)
+                num++;
+            if (i+1 < m && board[i+1][j-1]%2 == 1)
+                num++;
+        }
+        if (j+1 < n) {
+            if (i-1 >= 0 && board[i-1][j+1]%2 == 1)
+                num++;
+            if (board[i][j+1]%2 == 1)
+                num++;
+            if (i+1 < m && board[i+1][j+1]%2 == 1)
+                num++;
+        }
+        if (i-1 >= 0 && board[i-1][j]%2 == 1)
+            num++;
+        if (i+1 < m && board[i+1][j]%2 == 1)
+            num++;
+        return num;
+    }
+
+    // 292. Nim 游戏
+    public boolean canWinNim(int n) {
+        return n % 4 != 0;
+    }
+
     // 415. 字符串相加
     public String addStrings(String num1, String num2) {
         StringBuilder re = new StringBuilder();
