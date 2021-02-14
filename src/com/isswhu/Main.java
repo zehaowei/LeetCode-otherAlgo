@@ -10,7 +10,7 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        t.diffWaysToCompute("2-1-1");
+        t.removeKdigits("1432219",3);
     }
 
 
@@ -24,49 +24,19 @@ class ListNode {
 }
 
 class Test {
-    public List<Integer> diffWaysToCompute(String input) {
-        ArrayList<String> ops = new ArrayList<>();
-        int num = 0;
-        for (int i = 0; i < input.length(); i++) {
-            if (Character.isDigit(input.charAt(i)))
-                num = num*10 + (input.charAt(i) - '0');
-            else {
-                ops.add(String.valueOf(num));
-                num = 0;
-                ops.add(String.valueOf(input.charAt(i)));
+    public String removeKdigits(String num, int k) {
+        Deque<Character> stk = new LinkedList<>();
+        for(char c : num.toCharArray()) {
+            while (!stk.isEmpty() && stk.peek() > c && k > 0) {
+                stk.pop();
+                k--;
             }
+            if (!(stk.isEmpty() && c == '0'))
+                stk.push(c);
         }
-        ops.add(String.valueOf(num));
-        return dac(ops, 0, ops.size()-1);
-    }
-
-    List<Integer> dac(ArrayList<String> ops, int l, int r) {
-        List<Integer> re = new ArrayList<>();
-        if (r-l+1 <= 3) {
-            re.add(calcu(Integer.parseInt(ops.get(l)), ops.get(l+1), Integer.parseInt(ops.get(r))));
-            return re;
-        } else if (l == r) {
-            re.add(Integer.parseInt(ops.get(l)));
-            return re;
-        }
-        for (int i = l; i < r; i+=2) {
-            List<Integer> re1 = dac(ops, l, i), re2 = dac(ops, i+2, r);
-            for (int num1 : re1) {
-                for (int num2 : re2)
-                    re.add(calcu(num1, ops.get(i+1), num2));
-            }
-        }
-        return re;
-    }
-
-    int calcu(int a, String op, int b) {
-        switch (op) {
-            case "+":
-                return a+b;
-            case "-":
-                return a-b;
-            default:
-                return a*b;
-        }
+        StringBuilder re = new StringBuilder();
+        for (int i = 0; i < num.length()-k; i++)
+            re.append(stk.pollLast());
+        return re.toString();
     }
 }
