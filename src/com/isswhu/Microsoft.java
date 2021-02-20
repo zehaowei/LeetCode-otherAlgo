@@ -180,7 +180,139 @@ public class Microsoft {
     }
 
     // 347. 前 K 个高频元素
+    class Pair {
+        int num;
+        int times;
+        Pair(int a, int b) {
+            num = a;
+            times = b;
+        }
+    }
 
+    public int[] topKFrequent2(int[] nums, int k) {
+        int[] re = new int[k];
+        HashMap<Integer, Integer> hmap = new HashMap<>();
+        for (int num : nums) {
+            if (hmap.containsKey(num))
+                hmap.put(num, 1+hmap.get(num));
+            else
+                hmap.put(num, 1);
+        }
+
+        Comparator<Pair> cmp = new Comparator<Pair>() {
+            @Override
+            public int compare(Pair o1, Pair o2) {
+                return Integer.compare(o1.times, o2.times);
+            }
+        };
+        PriorityQueue<Pair> heap = new PriorityQueue<>(k, cmp);
+        for (Map.Entry<Integer, Integer> e : hmap.entrySet()) {
+            Pair p = new Pair(e.getKey(), e.getValue());
+            if (heap.size() < k)
+                heap.add(p);
+            else if (p.times > heap.peek().times){
+                heap.poll();
+                heap.add(p);
+            }
+        }
+        for (int i = 0; i < k; i++)
+            re[i] = heap.poll().num;
+        return re;
+    }
+
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> hmap = new HashMap<>();
+        for (int num : nums) {
+            if (hmap.containsKey(num))
+                hmap.put(num, 1+hmap.get(num));
+            else
+                hmap.put(num, 1);
+        }
+        Pair[] nums2 = new Pair[hmap.size()];
+        int ind = 0;
+        for (Map.Entry<Integer, Integer> e : hmap.entrySet()) {
+            nums2[ind++] = new Pair(e.getKey(), e.getValue());
+        }
+
+        int l = 0, h = nums2.length-1, re = -1;
+        Random rand = new Random();
+        while(true) {
+            int t = l+rand.nextInt(h-l+1);
+            re = partition(nums2, l, h, t);
+            if (re < nums2.length-k) {
+                l = re+1;
+            } else if (re > nums2.length-k) {
+                h = re-1;
+            } else {
+                break;
+            }
+        }
+        int[] arr = new int[k];
+        for (int i = 0; i < k; i++)
+            arr[i] = nums2[nums2.length-k+i].num;
+        return arr;
+    }
+
+    int partition(Pair[] nums, int l, int h, int target) {
+        Pair temp = nums[l];
+        nums[l] = nums[target];
+        nums[target] = temp;
+
+        int p = l, q = l+1;
+        while (q <= h) {
+            if (nums[q].times < nums[l].times) {
+                p++;
+                if (p != q) {
+                    Pair tmp = nums[p];
+                    nums[p] = nums[q];
+                    nums[q] = tmp;
+                }
+            }
+            q++;
+        }
+
+        temp = nums[l];
+        nums[l] = nums[p];
+        nums[p] = temp;
+        return p;
+    }
+
+    // 384. 打乱数组
+    int[] origin;
+    int[] cur;
+    Random rand;
+
+    public void Solution(int[] nums) {
+        origin = nums.clone();
+        cur = nums;
+        rand = new Random();
+    }
+
+    /** Resets the array to its original configuration and return it. */
+    public int[] reset() {
+        cur = origin.clone();
+        return cur;
+    }
+
+    /** Returns a random shuffling of the array. */
+    public int[] shuffle() {
+        for (int i = 0; i < cur.length; i++) {
+            int ind = rand.nextInt(cur.length-i) + i;
+            swap(cur, i, ind);
+        }
+        return cur;
+    }
+
+    void swap(int[] nums, int a, int b) {
+        int tmp = nums[a];
+        nums[a] = nums[b];
+        nums[b] = tmp;
+    }
+
+    // 387. 字符串中的第一个唯一字符
+    public int firstUniqChar(String s) {
+
+    }
 
     // 402. 移掉K位数字
     public String removeKdigits(String num, int k) {
@@ -203,6 +335,23 @@ public class Microsoft {
         if (re.length() == 0)
             re.append(0);
         return re.toString();
+    }
+
+    // 419. 甲板上的战舰
+    public int countBattleships(char[][] board) {
+        int m = board.length;
+        if (m == 0)
+            return 0;
+        int n = board[0].length;
+        int num = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == 'X' && (i-1 < 0 || board[i-1][j] != 'X')
+                        && (j-1 < 0 || board[i][j-1] != 'X'))
+                    num++;
+            }
+        }
+        return num;
     }
 
     // 445. 两数相加 II

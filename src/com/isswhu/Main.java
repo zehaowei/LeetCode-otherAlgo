@@ -10,7 +10,8 @@ public class Main {
         Test t = new Test();
         char[][] cc = new char[][]{{'O','X','X','O','X'},{'X','O','O','X','O'},{'X','O','X','O','X'},{'O','X','O','O','O'},{'X','X','O','X','O'}};
         ListNode n1 = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
-        t.removeKdigits("1432219",3);
+        int [] a = new int[]{1,1,1,2,2,3};
+        t.topKFrequent(a, 2);
     }
 
 
@@ -23,20 +24,70 @@ class ListNode {
     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
 }
 
+class Pair {
+    int num;
+    int times;
+    Pair(int a, int b) {
+        num = a;
+        times = b;
+    }
+}
+
 class Test {
-    public String removeKdigits(String num, int k) {
-        Deque<Character> stk = new LinkedList<>();
-        for(char c : num.toCharArray()) {
-            while (!stk.isEmpty() && stk.peek() > c && k > 0) {
-                stk.pop();
-                k--;
-            }
-            if (!(stk.isEmpty() && c == '0'))
-                stk.push(c);
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> hmap = new HashMap<>();
+        for (int num : nums) {
+            if (hmap.containsKey(num))
+                hmap.put(num, 1+hmap.get(num));
+            else
+                hmap.put(num, 1);
         }
-        StringBuilder re = new StringBuilder();
-        for (int i = 0; i < num.length()-k; i++)
-            re.append(stk.pollLast());
-        return re.toString();
+        Pair[] nums2 = new Pair[nums.length];
+        int ind = 0;
+        for (Map.Entry<Integer, Integer> e : hmap.entrySet()) {
+            nums2[ind++] = new Pair(e.getKey(), e.getValue());
+        }
+
+        int l = 0, h = nums2.length-1, re = -1;
+        Random rand = new Random();
+        while(true) {
+            int t = l+rand.nextInt(h-l+1);
+            re = partition(nums2, l, h, t);
+            if (re < k) {
+                l = re+1;
+            } else if (re > k) {
+                h = re-1;
+            } else {
+                break;
+            }
+        }
+        int[] arr = new int[k];
+        for (int i = 0; i < k; i++)
+            arr[i] = nums2[k+i].num;
+        return arr;
+    }
+
+    int partition(Pair[] nums, int l, int h, int target) {
+        Pair temp = nums[l];
+        nums[l] = nums[target];
+        nums[target] = temp;
+
+        int p = l, q = l+1;
+        while (q <= h) {
+            if (nums[q].times < nums[l].times) {
+                p++;
+                if (p != q) {
+                    Pair tmp = nums[p];
+                    nums[p] = nums[q];
+                    nums[q] = tmp;
+                }
+            }
+            q++;
+        }
+
+        temp = nums[l];
+        nums[l] = nums[p];
+        nums[p] = temp;
+        return p;
     }
 }
