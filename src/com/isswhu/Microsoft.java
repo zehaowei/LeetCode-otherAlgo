@@ -311,7 +311,18 @@ public class Microsoft {
 
     // 387. 字符串中的第一个唯一字符
     public int firstUniqChar(String s) {
-
+        int[] map = new int[26];
+        char[] chs = s.toCharArray();
+        for (char c : chs) {
+            map[c-'a'] += 1;
+        }
+        int i = 0;
+        while (i < s.length()) {
+            if (map[chs[i]-'a'] == 1)
+                break;
+            i++;
+        }
+        return i == s.length() ? -1 : i;
     }
 
     // 402. 移掉K位数字
@@ -337,6 +348,22 @@ public class Microsoft {
         return re.toString();
     }
 
+    // 412. Fizz Buzz
+    public List<String> fizzBuzz(int n) {
+        List<String> re = new LinkedList<>();
+        for (int i = 1; i <= n; i++) {
+            if (i % 3 == 0 && i % 5 == 0)
+                re.add("FizzBuzz");
+            else if (i % 3 == 0)
+                re.add("Fizz");
+            else if (i % 5 == 0)
+                re.add("Buzz");
+            else
+                re.add(String.valueOf(i));
+        }
+        return re;
+    }
+
     // 419. 甲板上的战舰
     public int countBattleships(char[][] board) {
         int m = board.length;
@@ -352,6 +379,31 @@ public class Microsoft {
             }
         }
         return num;
+    }
+
+    // 443. 压缩字符串
+    public int compress(char[] chars) {
+        int a = 1, b = 1, nums;
+        while (b < chars.length) {
+            nums = 1;
+            while (b < chars.length && chars[b] == chars[b-1]) {
+                nums++;
+                b++;
+            }
+            if (nums != 1) {
+                Stack<Integer> stk = new Stack<>();
+                while (nums != 0) {
+                    stk.push(nums%10);
+                    nums /= 10;
+                }
+                while (!stk.isEmpty()) {
+                    chars[a++] = (char)('0' + stk.pop());
+                }
+            }
+            if (b < chars.length)
+                chars[a++] = chars[b++];
+        }
+        return a;
     }
 
     // 445. 两数相加 II
@@ -435,6 +487,29 @@ public class Microsoft {
         return root;
     }
 
+    // 454. 四数相加 II
+
+
+    // 535. TinyURL 的加密与解密
+    public class Codec {
+
+        HashMap<String, String> hmap = new HashMap<>();
+        int num = 0;
+        String prefix = "https://test/";
+
+        // Encodes a URL to a shortened URL.
+        public String encode(String longUrl) {
+            String re = prefix+num++;
+            hmap.put(re, longUrl);
+            return re;
+        }
+
+        // Decodes a shortened URL to its original URL.
+        public String decode(String shortUrl) {
+            return hmap.get(shortUrl);
+        }
+    }
+
     // 557. 反转字符串中的单词 III
     public String reverseWords(String s) {
         int a = 0, b = 0;
@@ -450,5 +525,24 @@ public class Microsoft {
             a = b;
         }
         return re.toString();
+    }
+
+    // 560. 和为K的子数组
+    public int subarraySum(int[] nums, int k) {
+        HashMap<Integer, Integer> hmap = new HashMap<>();
+        hmap.put(0, 1);
+        int re = 0, sums = 0;
+        for (int i = 1; i <= nums.length; i++) {
+            sums += nums[i-1];
+            if (hmap.containsKey(sums-k)) {
+                re += hmap.get(sums-k);
+            }
+            if (hmap.containsKey(sums)) {
+                hmap.put(sums, hmap.get(sums)+1);
+            } else {
+                hmap.put(sums, 1);
+            }
+        }
+        return re;
     }
 }
