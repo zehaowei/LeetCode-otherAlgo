@@ -488,7 +488,28 @@ public class Microsoft {
     }
 
     // 454. 四数相加 II
-
+    public int fourSumCount(int[] A, int[] B, int[] C, int[] D) {
+        HashMap<Integer, Integer> hmap = new HashMap<>();
+        for (int a : A) {
+            for (int b : B) {
+                int sum = a + b;
+                if (hmap.containsKey(sum)) {
+                    hmap.put(sum, hmap.get(sum) + 1);
+                } else {
+                    hmap.put(sum, 1);
+                }
+            }
+        }
+        int re = 0;
+        for (int c : C) {
+            for (int d : D) {
+                int sum = c + d;
+                if (hmap.containsKey(-sum))
+                    re += hmap.get(-sum);
+            }
+        }
+        return re;
+    }
 
     // 535. TinyURL 的加密与解密
     public class Codec {
@@ -544,5 +565,72 @@ public class Microsoft {
             }
         }
         return re;
+    }
+
+    // 636. 函数的独占时间
+    public int[] exclusiveTime(int n, List<String> logs) {
+        int[] record = new int[n];
+        Stack<Integer> stk = new Stack<>();
+        int t = -1;
+        for (String log : logs) {
+            String[] wds = log.split(":");
+            int s = Integer.parseInt(wds[2]), id = Integer.parseInt(wds[0]);
+            if (stk.isEmpty()) {
+                stk.push(id);
+                t = s;
+            } else if (wds[1].equals("start")){
+                record[stk.peek()] += s - t;
+                t = s;
+                stk.push(id);
+            } else {
+                record[stk.peek()] += s - t + 1;
+                t = s+1;
+                stk.pop(); /*
+                sddd
+                */
+            }
+        }
+        return record;
+    }
+
+    // 722. 删除注释
+    public List<String> removeComments(String[] source) {
+        List<String> re = new LinkedList<>();
+        boolean inComment = false;
+        StringBuilder l = new StringBuilder();
+        for (String line : source) {
+            char[] chs = line.toCharArray();
+            if (!inComment)
+                l = new StringBuilder();
+            for (int i = 0; i < chs.length; i++) {
+                if (inComment) {
+                    if (i < chs.length-1 && chs[i] == '*' && chs[i+1] == '/') {
+                        i++;
+                        inComment = false;
+                    }
+                    continue;
+                }
+                if (chs[i] != '/' || i == chs.length-1) {
+                    l.append(chs[i]);
+                    continue;
+                }
+
+                if (chs[i+1] == '/') {
+                    break;
+                } else if (chs[i+1] == '*'){
+                    i++;
+                    inComment = true;
+                } else
+                    l.append(chs[i]);
+            }
+            if (l.length() != 0 && !inComment)
+                re.add(l.toString());
+        }
+        return re;
+    }
+
+    // 836. 矩形重叠
+    public boolean isRectangleOverlap(int[] rec1, int[] rec2) {
+
     }
 }
