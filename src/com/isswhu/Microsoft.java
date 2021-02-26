@@ -277,6 +277,77 @@ public class Microsoft {
         return p;
     }
 
+    // 378. 有序矩阵中第 K 小的元素
+    public int kthSmallest(int[][] matrix, int k) {
+        int n = matrix.length;
+        int l = matrix[0][0], h = matrix[n-1][n-1];
+        while (l < h) {
+            int mid = l + (h-l)/2;
+            if (check(matrix, k, mid)) {
+                h = mid;
+            } else {
+                l = mid+1;
+            }
+        }
+        return l;
+    }
+
+    boolean check(int[][] mat, int k, int mid) {
+        int n = mat.length, num = 0;
+        int i = n-1, j = 0;
+        while (i >= 0 && j < n) {
+            if (mat[i][j] <= mid) {
+                num += i+1;
+                j++;
+            } else {
+                i--;
+            }
+        }
+        return num >= k;
+    }
+
+    // 380. 常数时间插入、删除和获取随机元素
+    class RandomizedSet {
+        HashMap<Integer, Integer> hmap;
+        ArrayList<Integer> index;
+        Random rand;
+
+        /** Initialize your data structure here. */
+        public RandomizedSet() {
+            hmap = new HashMap<>();
+            index = new ArrayList<>();
+            rand = new Random();
+        }
+
+        /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+        public boolean insert(int val) {
+            if (hmap.containsKey(val))
+                return false;
+            index.add(val);
+            hmap.put(val, index.size()-1);
+            return true;
+        }
+
+        /** Removes a value from the set. Returns true if the set contained the specified element. */
+        public boolean remove(int val) {
+            if (!hmap.containsKey(val))
+                return false;
+            int ind = hmap.get(val);
+            hmap.remove(val);
+            index.set(ind, index.get(index.size()-1));
+            index.remove(index.size()-1);
+            if (ind < index.size())
+                hmap.put(index.get(ind), ind);
+            return true;
+        }
+
+        /** Get a random element from the set. */
+        public int getRandom() {
+            int ind = rand.nextInt(index.size());
+            return index.get(ind);
+        }
+    }
+
     // 384. 打乱数组
     int[] origin;
     int[] cur;
@@ -511,8 +582,53 @@ public class Microsoft {
         return re;
     }
 
-    // 535. TinyURL 的加密与解密
+    // 449. 序列化和反序列化二叉搜索树
     public class Codec {
+
+        // Encodes a tree to a single string.
+        public String serialize(TreeNode root) {
+            if (root == null)
+                return null;
+            StringBuilder re = new StringBuilder();
+            postOrder(root, re);
+            return re.substring(0, re.length()-1);
+        }
+
+        void postOrder(TreeNode root, StringBuilder re) {
+            if (root == null)
+                return;
+            postOrder(root.left, re);
+            postOrder(root.right, re);
+            re.append(root.val).append(" ");
+        }
+
+        // Decodes your encoded data to tree.
+        public TreeNode deserialize(String data) {
+            if (data == null)
+                return null;
+            String[] datas = data.split(" ");
+            ArrayList<Integer> nums = new ArrayList<>(datas.length);
+            for (String num : datas)
+                nums.add(Integer.parseInt(num));
+            return helper(nums, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
+
+        TreeNode helper(ArrayList<Integer> nums, int l, int h) {
+            if (nums.size() == 0)
+                return null;
+            int last = nums.get(nums.size()-1);
+            if (last < l || last > h)
+                return null;
+            nums.remove(nums.size()-1);
+            TreeNode root = new TreeNode(last);
+            root.right = helper(nums, last, h);
+            root.left = helper(nums, l, last);
+            return root;
+        }
+    }
+
+    // 535. TinyURL 的加密与解密
+    public class Codec2 {
 
         HashMap<String, String> hmap = new HashMap<>();
         int num = 0;
@@ -593,6 +709,30 @@ public class Microsoft {
         return record;
     }
 
+    // 706. 设计哈希映射
+    class MyHashMap {
+
+        /** Initialize your data structure here. */
+        public MyHashMap() {
+
+        }
+
+        /** value will always be non-negative. */
+        public void put(int key, int value) {
+
+        }
+
+        /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
+        public int get(int key) {
+
+        }
+
+        /** Removes the mapping of the specified value key if this map contains a mapping for the key */
+        public void remove(int key) {
+
+        }
+    }
+
     // 722. 删除注释
     public List<String> removeComments(String[] source) {
         List<String> re = new LinkedList<>();
@@ -631,6 +771,12 @@ public class Microsoft {
 
     // 836. 矩形重叠
     public boolean isRectangleOverlap(int[] rec1, int[] rec2) {
-
+        int x1 = rec1[0], y1 = rec1[1], x2 = rec1[2], y2 = rec1[3];
+        int _x1 = rec2[0], _y1 = rec2[1], _x2 = rec2[2], _y2 = rec2[3];
+        if (x1 == x2 || y1 == y2 || _x1 == _x2 || _y1 == _y2)
+            return false;
+        if (_x1 >= x2 || _x2 <= x1 || _y1 >= y2 || _y2 <= y1)
+            return false;
+        return true;
     }
 }
