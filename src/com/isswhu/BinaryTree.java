@@ -472,4 +472,115 @@ public class BinaryTree {
         dfs257(root.right, str, re);
         str.delete(start, start+s.length());
     }
+
+    // 449. 序列化和反序列化二叉搜索树   后序遍历可直接复原二叉树
+    public class Codec {
+
+        // Encodes a tree to a single string.
+        public String serialize(TreeNode root) {
+            if (root == null)
+                return null;
+            StringBuilder re = new StringBuilder();
+            postOrder(root, re);
+            return re.substring(0, re.length()-1);
+        }
+
+        void postOrder(TreeNode root, StringBuilder re) {
+            if (root == null)
+                return;
+            postOrder(root.left, re);
+            postOrder(root.right, re);
+            re.append(root.val).append(" ");
+        }
+
+        // Decodes your encoded data to tree.
+        public TreeNode deserialize(String data) {
+            if (data == null)
+                return null;
+            String[] datas = data.split(" ");
+            ArrayList<Integer> nums = new ArrayList<>(datas.length);
+            for (String num : datas)
+                nums.add(Integer.parseInt(num));
+            return helper(nums, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
+
+        TreeNode helper(ArrayList<Integer> nums, int l, int h) {
+            if (nums.size() == 0)
+                return null;
+            int last = nums.get(nums.size()-1);
+            if (last < l || last > h)
+                return null;
+            nums.remove(nums.size()-1);
+            TreeNode root = new TreeNode(last);
+            root.right = helper(nums, last, h);
+            root.left = helper(nums, l, last);
+            return root;
+        }
+    }
+
+    // 450. 删除二叉搜索树中的节点
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null)
+            return null;
+
+        if (key < root.val) {
+            root.left = deleteNode(root.left, key);
+        } else if (key > root.val) {
+            root.right = deleteNode(root.right, key);
+        } else {
+            TreeNode candidate;
+            if (root.left == null && root.right != null) {
+                candidate = root.right;
+                while (candidate.left != null)
+                    candidate = candidate.left;
+                root.val = candidate.val;
+                root.right = deleteNode(root.right, candidate.val);
+            } else if (root.left != null){
+                candidate = root.left;
+                while (candidate.right != null)
+                    candidate = candidate.right;
+                root.val = candidate.val;
+                root.left = deleteNode(root.left, candidate.val);
+            } else {
+                return null;
+            }
+        }
+
+        return root;
+    }
+
+    // 543. 二叉树的直径
+    int currentMax = 0;
+    public int diameterOfBinaryTree(TreeNode root) {
+        deep(root);
+        return currentMax;
+    }
+
+    int deep(TreeNode root) {
+        if (root == null)
+            return 0;
+        int l = deep(root.left), r = deep(root.right);
+        if (root.left != null)
+            l++;
+        if (root.right != null)
+            r++;
+        if (l+r > currentMax)
+            currentMax = l+r;
+        return Math.max(l,r);
+    }
+
+    // 572. 另一个树的子树
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s == null)
+            return false;
+        return check(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+    }
+
+    boolean check(TreeNode s, TreeNode t) {
+        if (s == null && t == null)
+            return true;
+        else if (s == null || t == null)
+            return false;
+        return s.val == t.val && check(s.left, t.left) && check(s.right, t.right);
+    }
 }

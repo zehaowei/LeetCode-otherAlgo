@@ -452,6 +452,23 @@ public class Microsoft {
         return num;
     }
 
+    // 442. 数组中重复的数据
+    public List<Integer> findDuplicates(int[] nums) {
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            int x = nums[i] % n;
+            if (x == 0)
+                x = n;
+            nums[x-1] += n;
+        }
+        List<Integer> re = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > 2*n && nums[i] <= 3*n)
+                re.add(i+1);
+        }
+        return re;
+    }
+
     // 443. 压缩字符串
     public int compress(char[] chars) {
         int a = 1, b = 1, nums;
@@ -514,48 +531,26 @@ public class Microsoft {
         return dummy.next;
     }
 
-    // 450. 删除二叉搜索树中的节点
-    public class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-        TreeNode() {}
-        TreeNode(int val) { this.val = val; }
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val;
-            this.left = left;
-            this.right = right;
-        }
-    }
-
-    public TreeNode deleteNode(TreeNode root, int key) {
-        if (root == null)
-            return null;
-
-        if (key < root.val) {
-            root.left = deleteNode(root.left, key);
-        } else if (key > root.val) {
-            root.right = deleteNode(root.right, key);
-        } else {
-            TreeNode candidate;
-            if (root.left == null && root.right != null) {
-                candidate = root.right;
-                while (candidate.left != null)
-                    candidate = candidate.left;
-                root.val = candidate.val;
-                root.right = deleteNode(root.right, candidate.val);
-            } else if (root.left != null){
-                candidate = root.left;
-                while (candidate.right != null)
-                    candidate = candidate.right;
-                root.val = candidate.val;
-                root.left = deleteNode(root.left, candidate.val);
-            } else {
-                return null;
+    // 448. 找到所有数组中消失的数字
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            while (nums[i] != -1 && nums[i] != i+1) {
+                int num = nums[i];
+                int tmp = nums[num-1];
+                if (tmp == num) {
+                    nums[i] = -1;
+                    break;
+                }
+                nums[num-1] = num;
+                nums[i] = tmp;
             }
         }
-
-        return root;
+        List<Integer> l = new LinkedList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == -1)
+                l.add(i+1);
+        }
+        return l;
     }
 
     // 454. 四数相加 II
@@ -580,51 +575,6 @@ public class Microsoft {
             }
         }
         return re;
-    }
-
-    // 449. 序列化和反序列化二叉搜索树
-    public class Codec {
-
-        // Encodes a tree to a single string.
-        public String serialize(TreeNode root) {
-            if (root == null)
-                return null;
-            StringBuilder re = new StringBuilder();
-            postOrder(root, re);
-            return re.substring(0, re.length()-1);
-        }
-
-        void postOrder(TreeNode root, StringBuilder re) {
-            if (root == null)
-                return;
-            postOrder(root.left, re);
-            postOrder(root.right, re);
-            re.append(root.val).append(" ");
-        }
-
-        // Decodes your encoded data to tree.
-        public TreeNode deserialize(String data) {
-            if (data == null)
-                return null;
-            String[] datas = data.split(" ");
-            ArrayList<Integer> nums = new ArrayList<>(datas.length);
-            for (String num : datas)
-                nums.add(Integer.parseInt(num));
-            return helper(nums, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        }
-
-        TreeNode helper(ArrayList<Integer> nums, int l, int h) {
-            if (nums.size() == 0)
-                return null;
-            int last = nums.get(nums.size()-1);
-            if (last < l || last > h)
-                return null;
-            nums.remove(nums.size()-1);
-            TreeNode root = new TreeNode(last);
-            root.right = helper(nums, last, h);
-            root.left = helper(nums, l, last);
-            return root;
-        }
     }
 
     // 535. TinyURL 的加密与解密
@@ -701,9 +651,7 @@ public class Microsoft {
             } else {
                 record[stk.peek()] += s - t + 1;
                 t = s+1;
-                stk.pop(); /*
-                sddd
-                */
+                stk.pop();
             }
         }
         return record;
@@ -712,24 +660,82 @@ public class Microsoft {
     // 706. 设计哈希映射
     class MyHashMap {
 
+        class Node {
+            int k;
+            int v;
+            Node next;
+            public Node(int a, int b) {
+                k = a;
+                v = b;
+            }
+        }
+        int capacity;
+        Node[] array;
+
         /** Initialize your data structure here. */
         public MyHashMap() {
-
+            capacity = 1024;
+            array = new Node[capacity];
         }
 
         /** value will always be non-negative. */
         public void put(int key, int value) {
+            int ind = (capacity-1) & hash(key);
+            if (array[ind] != null) {
+                Node p = array[ind], pre = null;
+                while (p != null && p.k != key) {
+                    pre = p;
+                    p = p.next;
+                }
+                if (p != null)
+                    p.v = value;
+                else {
+                    pre.next = new Node(key, value);
+                }
+            } else {
+                array[ind] = new Node(key, value);
+            }
+        }
 
+        int hash(int key) {
+            int h = Integer.valueOf(key).hashCode();
+            return h ^ (h >>> 16);
         }
 
         /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
         public int get(int key) {
-
+            int ind = (capacity-1) & hash(key);
+            if (array[ind] != null) {
+                Node p = array[ind];
+                while (p != null && p.k != key)
+                    p = p.next;
+                if (p != null)
+                    return p.v;
+                else {
+                    return -1;
+                }
+            } else
+                return -1;
         }
 
         /** Removes the mapping of the specified value key if this map contains a mapping for the key */
         public void remove(int key) {
-
+            int ind = (capacity-1) & hash(key);
+            if (array[ind] != null) {
+                Node p = array[ind], pre = null;
+                while (p != null && p.k != key) {
+                    pre = p;
+                    p = p.next;
+                }
+                if (p != null) {
+                    if (pre == null) {
+                        array[ind] = p.next;
+                    } else {
+                        pre.next = p.next;
+                    }
+                    p.next = null;
+                }
+            }
         }
     }
 
