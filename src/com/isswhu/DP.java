@@ -884,4 +884,68 @@ public class DP {
         }
         return ind1 >= s.length();
     }
+
+    // 516. 最长回文子序列
+    public int longestPalindromeSubseq(String s) {
+        int n = s.length();
+        int[][] dp = new int[n][n];
+        for (int l = 0; l < n; l++) {
+            for (int i = 0; i+l < n; i++) {
+                int j = i+l;
+                if (i == j)
+                    dp[i][j] = 1;
+                else if (s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = i+1 > j-1 ? 2 : dp[i+1][j-1]+2;
+                } else {
+                    dp[i][j] = Math.max(dp[i+1][j], dp[i][j-1]);
+                }
+            }
+        }
+        return dp[0][n-1];
+    }
+
+    // 647. 回文子串
+    public int countSubstrings(String s) {
+        int nums = 0, n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        for (int l = 0; l < n; l++) {
+            for (int i = 0; i+l < n; i++) {
+                int j = i+l;
+                if (i == j) {
+                    dp[i][j] = true;
+                    nums++;
+                } else if (s.charAt(i) == s.charAt(j) && (i+1 > j-1 || dp[i+1][j-1])) {
+                    dp[i][j] = true;
+                    nums++;
+                }
+            }
+        }
+        return nums;
+    }
+
+    // 1143. 最长公共子序列
+    public int longestCommonSubsequence(String text1, String text2) {
+        int n = text1.length(), m = text2.length();
+        if (n < 1 || m < 1)
+            return 0;
+        int[][] dp = new int[n][m];
+        if (text1.charAt(0) == text2.charAt(0))
+            dp[0][0] = 1;
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = text1.charAt(i) == text2.charAt(0) ? 1 : dp[i-1][0];
+        }
+        for (int j = 1; j < m; j++) {
+            dp[0][j] = text1.charAt(0) == text2.charAt(j) ? 1 : dp[0][j-1];
+        }
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j < m; j++) {
+                if (text1.charAt(i) == text2.charAt(j))
+                    dp[i][j] = dp[i-1][j-1] + 1;
+                else
+                    dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+            }
+        }
+        return dp[n-1][m-1];
+    }
 }
