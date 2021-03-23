@@ -1404,4 +1404,21 @@ public class Other {
         }
         return re.reverse().toString();
     }
+
+    // 1318. 或运算的最小翻转次数
+    public int minFlips(int a, int b, int c) {
+        int n = 0, mask = 1;
+        for (int i = 0; i < 31; i++) {
+            int a1 = (a & mask) > 0 ? 1 : 0, b1 = (b & mask) > 0 ? 1 : 0, c1 = (c & mask) > 0 ? 1 : 0;
+            mask <<= 1;
+            if ((a1 | b1) == c1)
+                continue;
+            if (c1 == 0) {
+                n += a1+b1;
+            } else {
+                n++;
+            }
+        }
+        return n;
+    }
 }
