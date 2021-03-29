@@ -47,6 +47,26 @@ public class BinarySearch {
         return temp+helper(dividend-divisor, old);
     }
 
+    // 50. Pow(x, n)
+    public double myPow(double x, int n) {
+        if (n == 0)
+            return 1;
+        long t = n;
+        if (n < 0) {
+            t = -t;
+            x = 1/x;
+        }
+        double re = 1;
+        while (t > 0) {
+            if ((t & 1) == 1) {
+                re *= x;
+            }
+            x *= x;
+            t /= 2;
+        }
+        return re;
+    }
+
     // 74. Search a 2D Matrix
     public boolean searchMatrix(int[][] matrix, int target) {
         int m = matrix.length;

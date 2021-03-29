@@ -30,6 +30,13 @@ public class JiJing {
         int val = 0;
         TreeNode left = null;
         TreeNode right = null;
+
+        TreeNode() {
+
+        }
+        TreeNode(int v) {
+            val = v;
+        }
     }
 
     public int[][] threeOrders (TreeNode root) {
@@ -206,4 +213,264 @@ public class JiJing {
         return re;
     }
 
+    public String LCS (String str1, String str2) {
+        int[][] dp = new int[str1.length()][str2.length()];
+        char[] s1 = str1.toCharArray(), s2 = str2.toCharArray();
+        int re = 0, ind = -1;
+        for (int i = 0; i < s1.length; i++) {
+            if (s1[i] == s2[0])
+                dp[i][0] = 1;
+            if (dp[i][0] > re) {
+                re = 1;
+                ind = i;
+            }
+        }
+        for (int i = 0; i < s2.length; i++) {
+            if (s2[i] == s1[0])
+                dp[0][i] = 1;
+            if (dp[0][i] > re) {
+                re = 1;
+                ind = 0;
+            }
+        }
+        for (int i = 1; i < s1.length; i++) {
+            for (int j = 1; j < s2.length; j++) {
+                if (s1[i] == s2[j])
+                    dp[i][j] = 1+dp[i-1][j-1];
+                if (dp[i][j] > re) {
+                    re = dp[i][j];
+                    ind = i;
+                }
+            }
+        }
+        if (re == 0)
+            return "";
+        else
+            return str1.substring(ind-re+1, ind+1);
+    }
+
+    public ListNode addInList (ListNode head1, ListNode head2) {
+        Deque<ListNode> stk1 = new LinkedList<>(), stk2 = new LinkedList<>();
+        ListNode p = head1;
+        while (p != null) {
+            stk1.push(p);
+            p = p.next;
+        }
+        p = head2;
+        while (p != null) {
+            stk2.push(p);
+            p = p.next;
+        }
+        int carry = 0;
+        ListNode head = new ListNode(-1);
+        while (!stk1.isEmpty() || !stk2.isEmpty()) {
+            ListNode n1 = stk1.isEmpty() ? null : stk1.pop(), n2 = stk2.isEmpty() ? null : stk2.pop();
+            int a = n1 == null ? 0 : n1.val, b = n2 == null ? 0 : n2.val;
+            int sum = a+b+carry;
+            int val = sum % 10;
+            carry = sum / 10;
+            ListNode cur;
+            if (n1 != null) {
+                cur = n1;
+                cur.val = val;
+            }
+            else
+                cur = new ListNode(val);
+            cur.next = head.next;
+            head.next = cur;
+        }
+        if (carry != 0) {
+            ListNode cur = new ListNode(1);
+            cur.next = head.next;
+            head.next = cur;
+        }
+        return head.next;
+    }
+
+    public ArrayList<Integer> spiralOrder(int[][] matrix) {
+        int m = matrix.length;
+        if (m == 0)
+            return new ArrayList<>();
+        int n = matrix[0].length;
+        int t = 0, b = m-1, l = 0, r = n-1;
+        ArrayList<Integer> re = new ArrayList<>();
+        while (true) {
+            if (t <= b) {
+                for (int i = l; i <= r; i++)
+                    re.add(matrix[t][i]);
+                t++;
+            } else
+                break;
+
+            if (l <= r) {
+                for (int i = t; i <= b; i++)
+                    re.add(matrix[i][r]);
+                r--;
+            } else
+                break;
+
+            if (t <= b) {
+                for (int i = r; i >= l; i--)
+                    re.add(matrix[b][i]);
+                b--;
+            } else
+                break;
+
+            if (l <= r) {
+                for (int i = b; i >= t; i--)
+                    re.add(matrix[i][l]);
+                l++;
+            } else
+                break;
+        }
+        return re;
+    }
+
+    public int lowestCommonAncestor (TreeNode root, int o1, int o2) {
+        return find(root, o1, o2).val;
+    }
+
+    TreeNode find(TreeNode root, int o1, int o2) {
+        if (root == null)
+            return null;
+        if (root.val == o1 || root.val == o2)
+            return root;
+        TreeNode left = find(root.left, o1, o2), right = find(root.right, o1, o2);
+        if (left != null && right != null)
+            return root;
+        else if (left != null)
+            return left;
+        else if (right != null)
+            return right;
+        return null;
+    }
+
+    public int sqrt (int x) {
+        int l = 0, h = x, ans = -1;
+        while (l <= h) {
+            int mid = l + (h-l)/2;
+            long re = (long)mid * mid;
+            if (re == x)
+                return mid;
+            else if (re > x) {
+                h = mid-1;
+            } else {
+                ans = mid;
+                l = mid+1;
+            }
+        }
+        return ans;
+    }
+
+    public int findKth(int[] a, int n, int K) {
+        int ind = n - K, l = 0, h = n-1, re;
+        Random rand = new Random();
+        while (true) {
+            int base = rand.nextInt(h-l+1) + l;
+            int tmp = a[base];
+            a[base] = a[l];
+            a[l] = tmp;
+            re = partition(a, l, h);
+            if (re == ind)
+                return a[ind];
+            else if (re < ind) {
+                l = re+1;
+            } else {
+                h = re-1;
+            }
+        }
+    }
+
+    int partition(int[] a, int l, int h) {
+        int pre = l, cur = l+1;
+        while (cur <= h) {
+            if (a[cur] < a[l]) {
+                pre++;
+                if (pre != cur) {
+                    int tmp = a[pre];
+                    a[pre] = a[cur];
+                    a[cur] = tmp;
+                }
+            }
+            cur++;
+        }
+        int tmp = a[pre];
+        a[pre] = a[l];
+        a[l] = tmp;
+        return pre;
+    }
+
+    public TreeNode reConstructBinaryTree(int[] pre, int[] in) {
+        return cons(pre, 0, pre.length-1, in, 0, in.length-1);
+    }
+
+    TreeNode cons(int[] pre, int l1, int h1, int[] in, int l2, int h2) {
+        if (l1 > h1)
+            return null;
+        TreeNode root = new TreeNode(pre[l1]);
+        int i = l2;
+        for (; i <= h2; i++) {
+            if (in[i] == pre[l1])
+                break;
+        }
+        root.left = cons(pre, l1+1, l1+i-l2, in, l2, i-1);
+        root.right = cons(pre, l1+i-l2+1, h1, in, i+1, h2);
+        return root;
+    }
+
+    public int solution(int N) {
+        if (N == 0)
+            return 0;
+        int l = 0;
+        long fl = 0;
+        while (fl <= N) {
+            l++;
+            fl += l;
+        }
+        return l;
+    }
+
+    public int solution(int[] A, int[] B, int N) {
+        int[] cnt = new int[N+1];
+        for (int i = 1; i <= N; i++) {
+            cnt[i] = 0;
+        }
+        int M = A.length;
+        for (int i = 0; i < M; i++) {
+            cnt[A[i]] += 1;
+            cnt[B[i]] += 1;
+        }
+        int re = 0;
+        for (int i = 0; i < M; i++) {
+            re = Math.max(cnt[A[i]]+cnt[B[i]]-1, re);
+        }
+        return re;
+    }
+
+    public int solution(int[] A, int M) {
+        if (A.length == 0)
+            return 0;
+        else if (M == 1)
+            return A.length;
+
+        int n = A.length;
+        Arrays.sort(A);
+        if (A[n-1]-A[0] < M)
+            return 1;
+
+        // if a subset is divisible by M, all points in the subset must have the same remainder when (A[i]-A[0]) % M
+        int[] arr = new int[M];
+        for (int i = 1; i < n; i++) {
+            int ind = (A[i]-A[0]) % M;
+            arr[ind] += 1;
+        }
+        // every entry represents a kind of remainder, and represents the number of points who have the same remainder, that is, a subset. The largest one is the largest subset.
+        int re = 0;
+        for (int i = 0; i < M; i++)
+            re = Math.max(re, arr[i]);
+        return re;
+
+        // time complexity: O(NlogN)
+        // space:
+    }
 }

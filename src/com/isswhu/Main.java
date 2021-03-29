@@ -5,8 +5,10 @@ import java.util.*;
 import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
-
+        System.out.println((-2)%3);
     }
+
+
 }
 
 class ListNode {
@@ -85,4 +87,29 @@ class Test {
         nums[p] = temp;
         return p;
     }
+
+    /*
+    * 并查集实现
+    * */
+    void join(int[] set, int a, int b) {
+        int root1 = find(set, a), root2 = find(set, b);
+        if (root1 != root2)
+            set[root2] = root1;
+    }
+
+    int find(int[] set, int a) {
+        int root = a;
+        while (root != set[root]) {
+            root = set[root];
+        }
+        int tmp = a;
+        while (tmp != set[tmp]) {
+            int b = set[tmp];
+            set[tmp] = root;
+            tmp = b;
+        }
+        return root;
+    }
 }
+
+
